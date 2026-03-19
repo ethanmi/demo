@@ -155,6 +155,10 @@
       margin-bottom: 20px;
     }
 
+    .topbar.hidden {
+      display: none;
+    }
+
     .crumbs h2 {
       margin: 0;
       font-size: 28px;
@@ -416,6 +420,26 @@
       flex-wrap: wrap;
     }
 
+    .list-header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .list-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .list-actions.right {
+      justify-content: flex-end;
+      margin-left: auto;
+    }
+
     .btn {
       min-height: 40px;
       padding: 0 16px;
@@ -440,6 +464,13 @@
       background: #fff;
       color: var(--text);
       border-color: #d7dfeb;
+    }
+
+    .btn-secondary {
+      background: #eef2f7;
+      color: #435266;
+      border-color: #d6deea;
+      box-shadow: none;
     }
 
     .btn-link {
@@ -476,6 +507,274 @@
 
     .table-wrap {
       overflow: auto;
+    }
+
+    .station-table {
+      min-width: 1280px;
+    }
+
+    .station-table th,
+    .station-table td {
+      white-space: nowrap;
+    }
+
+    .topology-page {
+      display: grid;
+      gap: 22px;
+    }
+
+    .topology-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 6px 4px 0;
+    }
+
+    .topology-back {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid #d7dfeb;
+      background: #fff;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .topology-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .topology-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .topology-surface {
+      background: #fff;
+      border: 1px solid #e2e8f3;
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topology-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 20px 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .topology-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .topology-stage {
+      overflow: auto;
+      min-height: 760px;
+      padding: 30px 24px 40px;
+      background-color: #fcfdff;
+      background-image: radial-gradient(circle, rgba(191, 204, 226, 0.72) 1px, transparent 1.2px);
+      background-size: 18px 18px;
+    }
+
+    .topology-stage-inner {
+      position: relative;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    .topology-tree {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      min-width: 1260px;
+      display: flex;
+      justify-content: center;
+      padding: 12px 12px 20px;
+      transform: translateX(-50%) scale(1);
+      transform-origin: top center;
+      transition: transform 180ms ease;
+    }
+
+    .topology-branch {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .topology-card {
+      width: 286px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #dfe7f5;
+      box-shadow: 0 18px 34px rgba(46, 73, 124, 0.12);
+      overflow: hidden;
+    }
+
+    .topology-card.root {
+      width: 318px;
+    }
+
+    .topology-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 16px;
+      color: #fff;
+      background: linear-gradient(135deg, #6f7ae6, #7f8af2);
+    }
+
+    .topology-card.root .topology-card-header {
+      background: linear-gradient(135deg, #515b70, #616c82);
+    }
+
+    .topology-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .topology-card-icon {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      font-size: 14px;
+    }
+
+    .topology-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topology-card-actions button {
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.92);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+    }
+
+    .topology-card-body {
+      padding: 20px 16px 18px;
+    }
+
+    .topology-card.root .topology-card-body {
+      min-height: 86px;
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+      color: #384252;
+    }
+
+    .topology-link-button {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 12px;
+      border: 1px solid #86a2ff;
+      background: #fff;
+      color: #3566ff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .topology-plus {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      margin: 18px 0 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      border: 1px solid #d8e0ee;
+      background: #fff;
+      color: #7686a3;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(85, 110, 155, 0.1);
+    }
+
+    .topology-plus::before,
+    .topology-plus::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 3px;
+      transform: translateX(-50%);
+      background: #b7c7e2;
+    }
+
+    .topology-plus::before {
+      top: -20px;
+      height: 20px;
+    }
+
+    .topology-plus::after {
+      top: 34px;
+      height: 26px;
+    }
+
+    .topology-children {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 56px;
+      padding-top: 40px;
+    }
+
+    .topology-children::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 16.666%;
+      right: 16.666%;
+      height: 3px;
+      background: #b7c7e2;
+      border-radius: 999px;
+    }
+
+    .topology-children.single::before {
+      left: 50%;
+      right: auto;
+      width: 3px;
+      height: 24px;
+      transform: translateX(-50%);
+    }
+
+    .topology-children > .topology-branch::before {
+      content: "";
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      width: 3px;
+      height: 40px;
+      transform: translateX(-50%);
+      background: #b7c7e2;
+    }
+
+    .topology-children.single > .topology-branch::before {
+      display: none;
     }
 
     table {
@@ -719,6 +1018,19 @@
         margin-top: 16px;
         margin-left: 0;
       }
+
+      .list-toolbar {
+        align-items: stretch;
+      }
+
+      .list-actions.right {
+        margin-left: 0;
+        justify-content: flex-start;
+      }
+
+      .topology-toolbar {
+        align-items: stretch;
+      }
     }
 
     @media (max-width: 760px) {
@@ -738,6 +1050,20 @@
 
       .span-2 {
         grid-column: auto;
+      }
+
+      .topology-stage {
+        min-height: 640px;
+        padding-inline: 16px;
+      }
+
+      .topology-card,
+      .topology-card.root {
+        width: 248px;
+      }
+
+      .topology-children {
+        gap: 28px;
       }
     }
   </style>
@@ -819,9 +1145,12 @@
     ];
 
     const stationTypeOptions = [
+      "发电类/集中式光伏",
+      "发电类/工商业分布式光伏",
       "发电类/分布式光伏",
       "发电类/风电配储",
-      "储能类/工商储能",
+      "储能类/独立储能",
+      "储能类/工商业储能",
       "用电类/商业负荷",
       "用电类/充电站"
     ];
@@ -1005,42 +1334,97 @@
         {
           id: 201,
           name: "苏州工业园区储能站",
-          systemNo: "ST-2025-001",
-          type: "储能类/工商储能",
+          type: "储能类/工商业储能",
           gridDate: "2025-04-18",
           nature: "代运营",
           owner: "刘昊-13810001122",
           topology: "已配置",
+          address: "江苏省苏州市工业园区星湖街 88 号",
           location: "120.7254,31.3297"
         },
         {
           id: 202,
           name: "嘉兴秀洲分布式光伏",
-          systemNo: "ST-2025-004",
           type: "发电类/分布式光伏",
           gridDate: "2024-11-03",
           nature: "自持",
           owner: "王宁-13920001221",
           topology: "已配置",
+          address: "浙江省嘉兴市秀洲区新塍大道 126 号",
           location: "120.6848,30.7601"
         },
         {
           id: 203,
           name: "上海临港充电示范站",
-          systemNo: "ST-2025-017",
           type: "用电类/充电站",
           gridDate: "2025-01-09",
           nature: "代运营",
           owner: "周倩-13711119888",
           topology: "未配置",
+          address: "上海市浦东新区临港新片区海港大道 501 号",
           location: "121.9208,30.8991"
+        },
+        {
+          id: 204,
+          name: "宁夏中卫集中式光伏一场",
+          type: "发电类/集中式光伏",
+          gridDate: "2024-07-16",
+          nature: "自持",
+          owner: "陈澈-13610008961",
+          topology: "已配置",
+          address: "宁夏回族自治区中卫市沙坡头区光明大道 18 号",
+          location: "105.1965,37.5002"
+        },
+        {
+          id: 205,
+          name: "苏州园区工商业分布式光伏站",
+          type: "发电类/工商业分布式光伏",
+          gridDate: "2025-02-25",
+          nature: "代运营",
+          owner: "韩雪-13522006718",
+          topology: "已配置",
+          address: "江苏省苏州市工业园区金鸡湖大道 209 号",
+          location: "120.7496,31.3158"
+        },
+        {
+          id: 206,
+          name: "盐城海堤独立储能电站",
+          type: "储能类/独立储能",
+          gridDate: "2025-06-12",
+          nature: "自持",
+          owner: "宋远-13700883321",
+          topology: "已配置",
+          address: "江苏省盐城市大丰区海港路 66 号",
+          location: "120.7709,33.1998"
+        },
+        {
+          id: 207,
+          name: "无锡高新工商业储能站",
+          type: "储能类/工商业储能",
+          gridDate: "2025-03-06",
+          nature: "代运营",
+          owner: "沈茗-13900442217",
+          topology: "已配置",
+          address: "江苏省无锡市新吴区菱湖大道 188 号",
+          location: "120.3658,31.4927"
+        },
+        {
+          id: 208,
+          name: "深圳前海超级充电站",
+          type: "用电类/充电站",
+          gridDate: "2025-08-20",
+          nature: "自持",
+          owner: "郭林-13800990012",
+          topology: "已配置",
+          address: "广东省深圳市南山区前海大道 1088 号",
+          location: "113.8781,22.5334"
         }
       ],
       devices: [
         {
           id: 301,
           name: "1# 储能 PCS",
-          code: "DEV-PCS-001",
+          sn: "SN-PCS-202503-001",
           type: "PCS",
           brand: "海擎储能",
           station: "苏州工业园区储能站"
@@ -1048,7 +1432,7 @@
         {
           id: 302,
           name: "2# 光伏逆变器",
-          code: "DEV-PV-012",
+          sn: "SN-INV-202411-012",
           type: "逆变器",
           brand: "阳曜智控",
           station: "嘉兴秀洲分布式光伏"
@@ -1056,10 +1440,142 @@
         {
           id: 303,
           name: "直流快充桩 A1",
-          code: "DEV-EV-006",
+          sn: "SN-EV-202501-006",
           type: "充电桩",
           brand: "迅驰电驱",
           station: "上海临港充电示范站"
+        }
+      ]
+    };
+
+    const topologyTemplates = {
+      "发电类/分布式光伏": [
+        {
+          title: "关口",
+          children: [
+            {
+              title: "并网口1",
+              children: [
+                { title: "1#逆变器" }
+              ]
+            },
+            {
+              title: "并网口2",
+              children: [
+                { title: "2#逆变器" },
+                { title: "3#逆变器" }
+              ]
+            }
+          ]
+        }
+      ],
+      "发电类/工商业分布式光伏": [
+        {
+          title: "并网柜",
+          children: [
+            {
+              title: "A区方阵",
+              children: [
+                { title: "1#逆变器" },
+                { title: "2#逆变器" }
+              ]
+            },
+            {
+              title: "B区方阵",
+              children: [
+                { title: "3#逆变器" },
+                { title: "4#逆变器" }
+              ]
+            }
+          ]
+        }
+      ],
+      "发电类/集中式光伏": [
+        {
+          title: "主升压站",
+          children: [
+            {
+              title: "1#集电线路",
+              children: [
+                { title: "1#逆变器" },
+                { title: "2#逆变器" }
+              ]
+            },
+            {
+              title: "2#集电线路",
+              children: [
+                { title: "3#逆变器" },
+                { title: "4#逆变器" }
+              ]
+            },
+            {
+              title: "3#集电线路",
+              children: [
+                { title: "5#逆变器" }
+              ]
+            }
+          ]
+        }
+      ],
+      "储能类/独立储能": [
+        {
+          title: "EMS总控",
+          children: [
+            {
+              title: "1#储能单元",
+              children: [
+                { title: "1#PCS" },
+                { title: "1#BMS" }
+              ]
+            },
+            {
+              title: "2#储能单元",
+              children: [
+                { title: "2#PCS" },
+                { title: "2#BMS" }
+              ]
+            }
+          ]
+        }
+      ],
+      "储能类/工商业储能": [
+        {
+          title: "关口",
+          children: [
+            {
+              title: "1#储能柜",
+              children: [
+                { title: "1#PCS" }
+              ]
+            },
+            {
+              title: "2#储能柜",
+              children: [
+                { title: "2#PCS" }
+              ]
+            }
+          ]
+        }
+      ],
+      "用电类/充电站": [
+        {
+          title: "配电总柜",
+          children: [
+            {
+              title: "充电区A",
+              children: [
+                { title: "1#充电桩" },
+                { title: "2#充电桩" }
+              ]
+            },
+            {
+              title: "充电区B",
+              children: [
+                { title: "3#充电桩" },
+                { title: "4#充电桩" }
+              ]
+            }
+          ]
         }
       ]
     };
@@ -1069,18 +1585,20 @@
       selectedDeviceTypeId: 2,
       deviceTypeTab: "main-data",
       selectedStationModelId: 101,
+      selectedTopologyStationId: 202,
       stationModelPage: 1,
       filters: {
         brands: { keyword: "" },
         stationModels: { name: "", category: "" },
         stationManagement: { name: "", type: "", topology: "" },
-        deviceManagement: { name: "", type: "", code: "", station: "", brand: "" }
+        deviceManagement: { name: "", type: "", sn: "", station: "" }
       },
       modal: null
     };
 
     const app = document.getElementById("app");
     const navRoot = document.getElementById("nav-root");
+    const topbar = document.querySelector(".topbar");
     const pageTitle = document.getElementById("page-title");
     const pageDesc = document.getElementById("page-desc");
     const modalMask = document.getElementById("modal-mask");
@@ -1100,10 +1618,16 @@
         .replaceAll("'", "&#39;");
     }
 
+    function getActiveViewId() {
+      if (state.currentView === "topology-config") return "station-management";
+      return state.currentView;
+    }
+
     function renderNav() {
+      const activeViewId = getActiveViewId();
       navRoot.innerHTML = navItems.map((group) => {
         const itemsHtml = group.items.map((item) => `
-          <button class="nav-item ${state.currentView === item.id ? "active" : ""}" type="button" data-nav="${item.id}">
+          <button class="nav-item ${activeViewId === item.id ? "active" : ""}" type="button" data-nav="${item.id}">
             ${item.label}
           </button>
         `).join("");
@@ -1117,6 +1641,11 @@
     }
 
     function renderTopbar() {
+      if (state.currentView === "topology-config") {
+        topbar.classList.add("hidden");
+        return;
+      }
+      topbar.classList.remove("hidden");
       const meta = navItems.flatMap((group) => group.items).find((item) => item.id === state.currentView);
       pageTitle.textContent = meta.label;
       pageDesc.textContent = meta.desc;
@@ -1392,7 +1921,7 @@
         const matchCategory = !filters.category || item.category === filters.category;
         return matchName && matchCategory;
       });
-      const pageSize = 4;
+      const pageSize = 10;
       const totalPages = Math.max(1, Math.ceil(modelRows.length / pageSize));
       const currentPage = Math.min(state.stationModelPage, totalPages);
       const pagedModelRows = modelRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -1408,9 +1937,9 @@
                 <input type="text" data-filter-view="stationModels" data-filter-key="name" placeholder="请输入场站名称" value="${escapeHtml(filters.name)}" />
               </div>
               <div class="field">
-                <label>所属类型</label>
+                <label>所属分组</label>
                 <select data-filter-view="stationModels" data-filter-key="category">
-                  <option value="">全部类型</option>
+                  <option value="">全部分组</option>
                   ${stationModelTypes.map((type) => `
                     <option value="${type}" ${filters.category === type ? "selected" : ""}>${type}</option>
                   `).join("")}
@@ -1442,7 +1971,7 @@
                         <th>场站名称</th>
                         <th>英文名称</th>
                         <th>模型编码</th>
-                        <th>所属类型</th>
+                        <th>所属分组</th>
                         <th>操作</th>
                       </tr>
                     </thead>
@@ -1518,7 +2047,7 @@
                           <td>${item.code}</td>
                           <td>${item.order}</td>
                           <td><span class="${tagClass(item.required)}">${item.required ? "必填" : "选填"}</span></td>
-                          <td>${item.inputType}</td>
+                          <td>${normalizeInputType(item.inputType)}</td>
                           <td>
                             <div class="table-actions">
                               <button class="btn-link" type="button" data-action="open-modal" data-modal="station-main-data">编辑</button>
@@ -1584,26 +2113,33 @@
             { compact: true }
           )}
           <section class="card">
-            <div class="card-header">
+            <div class="card-header list-header">
               <div class="card-title">
                 <h3>列表区</h3>
                 <p>场站管理列表，操作支持拓扑配置、编辑及更多动作展示。</p>
               </div>
-              <div class="list-actions">
-                <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station">新增场站</button>
+              <div class="list-toolbar">
+                <div class="list-actions">
+                  <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station">新增场站</button>
+                </div>
+                <div class="list-actions right">
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="批量导入场站">批量导入</button>
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="批量导出场站">批量导出</button>
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="下载场站导入模板">模板下载</button>
+                </div>
               </div>
             </div>
             <div class="table-wrap">
-              <table>
+              <table class="station-table">
                 <thead>
                   <tr>
                     <th>场站名称</th>
-                    <th>系统编号</th>
                     <th>场站类型</th>
                     <th>并网日期</th>
                     <th>场站性质</th>
                     <th>运维负责人-联系电话</th>
                     <th>拓扑状态</th>
+                    <th>详细地址</th>
                     <th>经纬度</th>
                     <th>操作</th>
                   </tr>
@@ -1614,16 +2150,16 @@
                       <td>
                         <div class="cell-title">${item.name}</div>
                       </td>
-                      <td>${item.systemNo}</td>
                       <td><span class="${tagClass(item.type)}">${item.type}</span></td>
                       <td>${item.gridDate}</td>
                       <td>${item.nature}</td>
                       <td>${item.owner}</td>
                       <td><span class="${tagClass(item.topology)}">${item.topology}</span></td>
+                      <td>${item.address}</td>
                       <td>${item.location}</td>
                       <td>
                         <div class="table-actions">
-                          <button class="btn-link" type="button" data-action="toast" data-message="打开 ${item.name} 的拓扑配置">拓扑配置</button>
+                          <button class="btn-link" type="button" data-action="open-topology" data-id="${item.id}">拓扑配置</button>
                           <button class="btn-link" type="button" data-action="open-modal" data-modal="station">编辑</button>
                           <button class="btn-link" type="button" data-action="toast" data-message="更多操作：上下线、删除场站">更多</button>
                         </div>
@@ -1645,10 +2181,9 @@
       const rows = dataStore.devices.filter((item) => {
         const matchName = !filters.name || item.name.includes(filters.name);
         const matchType = !filters.type || item.type === filters.type;
-        const matchCode = !filters.code || item.code.includes(filters.code);
+        const matchSn = !filters.sn || item.sn.includes(filters.sn);
         const matchStation = !filters.station || item.station.includes(filters.station);
-        const matchBrand = !filters.brand || item.brand.includes(filters.brand);
-        return matchName && matchType && matchCode && matchStation && matchBrand;
+        return matchName && matchType && matchSn && matchStation;
       });
 
       return `
@@ -1669,16 +2204,12 @@
                 </select>
               </div>
               <div class="field">
-                <label>设备编码</label>
-                <input type="text" data-filter-view="deviceManagement" data-filter-key="code" placeholder="请输入设备编码" value="${escapeHtml(filters.code)}" />
+                <label>设备SN号</label>
+                <input type="text" data-filter-view="deviceManagement" data-filter-key="sn" placeholder="请输入设备SN号" value="${escapeHtml(filters.sn)}" />
               </div>
               <div class="field">
                 <label>所属场站</label>
                 <input type="text" data-filter-view="deviceManagement" data-filter-key="station" placeholder="请输入所属场站" value="${escapeHtml(filters.station)}" />
-              </div>
-              <div class="field">
-                <label>品牌厂商</label>
-                <input type="text" data-filter-view="deviceManagement" data-filter-key="brand" placeholder="请输入品牌厂商" value="${escapeHtml(filters.brand)}" />
               </div>
             `,
             `
@@ -1687,13 +2218,20 @@
             `
           )}
           <section class="card">
-            <div class="card-header">
+            <div class="card-header list-header">
               <div class="card-title">
                 <h3>列表区</h3>
                 <p>设备实例管理列表，支持新增设备与基础维护动作。</p>
               </div>
-              <div class="list-actions">
-                <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="device">新增设备</button>
+              <div class="list-toolbar">
+                <div class="list-actions">
+                  <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="device">新增设备</button>
+                </div>
+                <div class="list-actions right">
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="批量导入设备">批量导入</button>
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="批量导出设备">批量导出</button>
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="下载设备导入模板">模板下载</button>
+                </div>
               </div>
             </div>
             <div class="table-wrap">
@@ -1701,7 +2239,7 @@
                 <thead>
                   <tr>
                     <th>设备名称</th>
-                    <th>设备编码</th>
+                    <th>设备SN号</th>
                     <th>设备类型</th>
                     <th>品牌厂商</th>
                     <th>所属场站</th>
@@ -1714,7 +2252,7 @@
                       <td>
                         <div class="cell-title">${item.name}</div>
                       </td>
-                      <td>${item.code}</td>
+                      <td>${item.sn}</td>
                       <td><span class="${tagClass(item.type)}">${item.type}</span></td>
                       <td>${item.brand}</td>
                       <td>${item.station}</td>
@@ -1737,11 +2275,17 @@
     }
 
     function getStationMainDataFields(type) {
+      if (type.includes("集中式光伏")) {
+        return ["装机容量", "汇流箱数量", "逆变器数量"];
+      }
       if (type.includes("分布式光伏")) {
         return ["额定容量", "并网电压等级", "组件数量"];
       }
-      if (type.includes("工商储能")) {
+      if (type.includes("工商业储能") || type.includes("工商储能")) {
         return ["额定功率", "额定容量", "电池簇数量"];
+      }
+      if (type.includes("独立储能")) {
+        return ["额定容量", "额定功率", "变流器数量"];
       }
       if (type.includes("充电站")) {
         return ["充电枪数量", "最大单枪功率", "停车位数量"];
@@ -1774,6 +2318,122 @@
           </div>
         </div>
       `;
+    }
+
+    function normalizeInputType(value) {
+      if (value === "数值") return "数字";
+      if (value === "下拉") return "下拉单选";
+      return value;
+    }
+
+    function getTopologyStation() {
+      return dataStore.stations.find((item) => item.id === state.selectedTopologyStationId) || dataStore.stations[0];
+    }
+
+    function getTopologyNodes(type) {
+      return topologyTemplates[type] || topologyTemplates["发电类/分布式光伏"];
+    }
+
+    function renderTopologyBranch(node, isRoot = false, stationName = "") {
+      const children = node.children || [];
+      const headerTitle = isRoot ? "根节点" : node.title;
+      const bodyHtml = isRoot
+        ? `<div>${escapeHtml(stationName)}</div>`
+        : `<button class="topology-link-button" type="button" data-action="toast" data-message="已模拟打开 ${node.title} 的关联设备">+ 去关联设备</button>`;
+
+      return `
+        <div class="topology-branch">
+          <div class="topology-card${isRoot ? " root" : ""}">
+            <div class="topology-card-header">
+              <div class="topology-card-title">
+                <span class="topology-card-icon">${isRoot ? "●" : "▣"}</span>
+                <span>${escapeHtml(headerTitle)}</span>
+              </div>
+              <div class="topology-card-actions">
+                <button type="button" data-action="toast" data-message="已模拟编辑 ${isRoot ? stationName : node.title}">编辑</button>
+                ${isRoot ? "" : `<button type="button" data-action="toast" data-message="已模拟删除 ${node.title}">删除</button>`}
+              </div>
+            </div>
+            <div class="topology-card-body">
+              ${bodyHtml}
+            </div>
+          </div>
+          ${children.length ? `
+            <button class="topology-plus" type="button" data-action="toast" data-message="已模拟在 ${isRoot ? stationName : node.title} 下新增节点">+</button>
+            <div class="topology-children ${children.length === 1 ? "single" : ""}">
+              ${children.map((child) => renderTopologyBranch(child, false, stationName)).join("")}
+            </div>
+          ` : ""}
+        </div>
+      `;
+    }
+
+    function renderTopologyConfig() {
+      const station = getTopologyStation();
+      const topologyNodes = getTopologyNodes(station.type);
+
+      return `
+        <div class="topology-page">
+          <div class="topology-header">
+            <button class="topology-back" type="button" data-action="back-topology">&lt;</button>
+            <div>
+              <h2>场站管理</h2>
+              <p>${escapeHtml(station.name)} 已按 ${escapeHtml(station.type)} 模板自动加载静态拓扑。</p>
+            </div>
+          </div>
+          <section class="topology-surface">
+            <div class="topology-toolbar">
+              <div class="topology-toolbar-group">
+                <button class="btn btn-primary" type="button" data-action="toast" data-message="已模拟复制当前场站拓扑">复制拓扑</button>
+                <button class="btn btn-primary" type="button" data-action="toast" data-message="已模拟初始化当前拓扑">初始化</button>
+              </div>
+              <div class="topology-toolbar-group">
+                <button class="btn btn-primary" type="button" data-action="fit-topology">全屏显示</button>
+              </div>
+            </div>
+            <div class="topology-stage" id="topology-stage">
+              <div class="topology-stage-inner" id="topology-stage-inner">
+                <div class="topology-tree" id="topology-tree">
+                  ${renderTopologyBranch({ title: "根节点", children: topologyNodes }, true, station.name)}
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function syncTopologyViewport() {
+      if (state.currentView !== "topology-config") return;
+
+      const stage = document.getElementById("topology-stage");
+      const stageInner = document.getElementById("topology-stage-inner");
+      const tree = document.getElementById("topology-tree");
+      if (!stage || !stageInner || !tree) return;
+
+      tree.style.transform = "translateX(-50%) scale(1)";
+      stageInner.style.height = "";
+
+      const treeWidth = tree.scrollWidth;
+      const treeHeight = tree.scrollHeight;
+      const availableWidth = Math.max(stage.clientWidth - 24, 320);
+      const availableHeight = Math.max(stage.clientHeight - 24, 320);
+
+      if (!treeWidth || !treeHeight) return;
+
+      const scale = Math.min(1, availableWidth / treeWidth, availableHeight / treeHeight);
+      tree.style.transform = `translateX(-50%) scale(${scale})`;
+      stageInner.style.height = `${Math.max(treeHeight * scale + 24, availableHeight)}px`;
+      stage.scrollTop = 0;
+      stage.scrollLeft = 0;
+    }
+
+    function scheduleTopologyViewportSync() {
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => syncTopologyViewport());
+        return;
+      }
+      setTimeout(syncTopologyViewport, 0);
     }
 
     function renderModalContent(type) {
@@ -1823,7 +2483,7 @@
                 <input type="text" placeholder="请输入模型编码" />
               </div>
               <div class="field">
-                <label>所属类型</label>
+                <label>所属分组</label>
                 <select>
                   <option>发电类</option>
                   <option>储能类</option>
@@ -1864,8 +2524,9 @@
                 <label>录入类型 *</label>
                 <select>
                   <option>文本</option>
-                  <option>数值</option>
-                  <option>下拉</option>
+                  <option>数字</option>
+                  <option>下拉单选</option>
+                  <option>下拉多选</option>
                 </select>
               </div>
               <div class="field">
@@ -1878,7 +2539,7 @@
       }
 
       if (type === "station") {
-        const selectedType = state.filters.stationManagement.type || "储能类/工商储能";
+        const selectedType = state.filters.stationManagement.type || "储能类/工商业储能";
         return {
           title: "新增场站",
           subtitle: "地址支持地图点选映射经纬度，主数据区随场站类型变化。",
@@ -1889,15 +2550,22 @@
                 <input type="text" placeholder="请输入场站名称" />
               </div>
               <div class="field">
-                <label>系统编号 *</label>
-                <input type="text" placeholder="请输入系统编号" />
-              </div>
-              <div class="field">
                 <label>场站类型 *</label>
                 <select id="station-type-select">
                   ${stationTypeOptions.map((item) => `
                     <option value="${item}" ${item === selectedType ? "selected" : ""}>${item}</option>
                   `).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>并网日期 *</label>
+                <input type="date" placeholder="请选择并网日期" />
+              </div>
+              <div class="field">
+                <label>场站性质 *</label>
+                <select>
+                  <option>自持</option>
+                  <option>代运营</option>
                 </select>
               </div>
               <div class="field">
@@ -1909,8 +2577,8 @@
                 <input type="text" placeholder="请输入联系电话" />
               </div>
               <div class="field span-2">
-                <label>地址 *</label>
-                <input type="text" placeholder="省市（县）区 - 街道 - 详细地址" />
+                <label>详细地址 *</label>
+                <input type="text" placeholder="请输入省市（县）区 - 街道 - 详细地址" />
               </div>
               <div class="field span-2">
                 <label>地图定位</label>
@@ -1938,8 +2606,8 @@
                 <input type="text" placeholder="请输入设备名称" />
               </div>
               <div class="field">
-                <label>设备编码 *</label>
-                <input type="text" placeholder="请输入设备编码" />
+                <label>设备SN号 *</label>
+                <input type="text" placeholder="请输入设备SN号" />
               </div>
               <div class="field">
                 <label>设备类型 *</label>
@@ -2024,7 +2692,7 @@
         state.stationModelPage = 1;
       }
       if (view === "stationManagement") state.filters.stationManagement = { name: "", type: "", topology: "" };
-      if (view === "deviceManagement") state.filters.deviceManagement = { name: "", type: "", code: "", station: "", brand: "" };
+      if (view === "deviceManagement") state.filters.deviceManagement = { name: "", type: "", sn: "", station: "" };
       render();
     }
 
@@ -2035,6 +2703,7 @@
       if (state.currentView === "point-management") return renderBlankView("点位管理");
       if (state.currentView === "space-models") return renderBlankView("空间模型");
       if (state.currentView === "station-management") return renderStationManagement();
+      if (state.currentView === "topology-config") return renderTopologyConfig();
       return renderDeviceManagement();
     }
 
@@ -2042,6 +2711,9 @@
       renderNav();
       renderTopbar();
       app.innerHTML = renderCurrentView();
+      if (state.currentView === "topology-config") {
+        scheduleTopologyViewportSync();
+      }
     }
 
     document.addEventListener("click", (event) => {
@@ -2091,6 +2763,25 @@
         return;
       }
 
+      if (action === "open-topology") {
+        state.selectedTopologyStationId = Number(actionButton.dataset.id);
+        state.currentView = "topology-config";
+        render();
+        return;
+      }
+
+      if (action === "back-topology") {
+        state.currentView = "station-management";
+        render();
+        return;
+      }
+
+      if (action === "fit-topology") {
+        scheduleTopologyViewportSync();
+        showToast("已按当前窗口自适应展示全局拓扑");
+        return;
+      }
+
       if (action === "toast") {
         showToast(actionButton.dataset.message);
         return;
@@ -2129,6 +2820,14 @@
     modalMask.addEventListener("click", (event) => {
       if (event.target === modalMask) closeModal();
     });
+
+    if (typeof window.addEventListener === "function") {
+      window.addEventListener("resize", () => {
+        if (state.currentView === "topology-config") {
+          scheduleTopologyViewportSync();
+        }
+      });
+    }
 
     render();
   </script>
