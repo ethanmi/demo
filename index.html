@@ -561,6 +561,20 @@
       overflow: hidden;
     }
 
+    .topology-workbench {
+      display: flex;
+      align-items: stretch;
+      min-height: 760px;
+    }
+
+    .topology-workbench.drawer-open .topology-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(17, 28, 48, 0.22);
+      pointer-events: none;
+    }
+
     .topology-toolbar {
       display: flex;
       align-items: center;
@@ -578,6 +592,8 @@
     }
 
     .topology-stage {
+      position: relative;
+      flex: 1;
       overflow: auto;
       min-height: 760px;
       padding: 30px 24px 40px;
@@ -620,6 +636,11 @@
       border: 1px solid #dfe7f5;
       box-shadow: 0 18px 34px rgba(46, 73, 124, 0.12);
       overflow: hidden;
+      cursor: pointer;
+    }
+
+    .topology-card.selected {
+      box-shadow: 0 0 0 4px rgba(53, 102, 255, 0.18), 0 22px 40px rgba(46, 73, 124, 0.16);
     }
 
     .topology-card.root {
@@ -775,6 +796,122 @@
 
     .topology-children.single > .topology-branch::before {
       display: none;
+    }
+
+    .topology-drawer {
+      width: 468px;
+      background: #fff;
+      border-left: 1px solid #e3eaf6;
+      display: flex;
+      flex-direction: column;
+      min-height: 760px;
+    }
+
+    .topology-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 22px;
+      color: #fff;
+      background: linear-gradient(135deg, #6f7ae6, #7f8af2);
+    }
+
+    .topology-drawer-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .topology-drawer-icon {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+    }
+
+    .topology-drawer-close {
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .topology-drawer-body {
+      flex: 1;
+      padding: 22px 26px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .topology-drawer-form {
+      display: grid;
+      gap: 18px;
+    }
+
+    .topology-drawer-row {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+    }
+
+    .topology-drawer-row label {
+      color: #4b5b76;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .topology-drawer-row .required::before {
+      content: "*";
+      color: #f04438;
+      margin-right: 4px;
+    }
+
+    .topology-drawer-row input,
+    .topology-drawer-row select,
+    .topology-drawer-row textarea {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid #d9e2ef;
+      border-radius: 12px;
+      background: #f5f7fb;
+      color: var(--text);
+      padding: 10px 14px;
+    }
+
+    .topology-drawer-row textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .topology-drawer-tip {
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(22, 119, 255, 0.08), rgba(111, 122, 230, 0.08));
+      border: 1px solid rgba(22, 119, 255, 0.14);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .topology-drawer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 18px 24px 24px;
+      border-top: 1px solid #e8eef7;
+      background: #fff;
     }
 
     table {
@@ -1031,6 +1168,17 @@
       .topology-toolbar {
         align-items: stretch;
       }
+
+      .topology-workbench {
+        flex-direction: column;
+      }
+
+      .topology-drawer {
+        width: 100%;
+        min-height: auto;
+        border-left: 0;
+        border-top: 1px solid #e3eaf6;
+      }
     }
 
     @media (max-width: 760px) {
@@ -1064,6 +1212,11 @@
 
       .topology-children {
         gap: 28px;
+      }
+
+      .topology-drawer-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
       }
     }
   </style>
@@ -1586,6 +1739,7 @@
       deviceTypeTab: "main-data",
       selectedStationModelId: 101,
       selectedTopologyStationId: 202,
+      topologyDrawer: null,
       stationModelPage: 1,
       filters: {
         brands: { keyword: "" },
@@ -2326,6 +2480,65 @@
       return value;
     }
 
+    function getTopologyDomainLabel(stationType) {
+      if (stationType.includes("发电")) return "光伏";
+      if (stationType.includes("储能")) return "储能";
+      if (stationType.includes("充电")) return "充电";
+      return "能源";
+    }
+
+    function getTopologyModelLabel(nodeTitle, stationType, isRoot = false) {
+      const domain = getTopologyDomainLabel(stationType);
+      if (isRoot) return `${domain}-场站`;
+      if (nodeTitle.includes("关口") || nodeTitle.includes("并网") || nodeTitle.includes("配电总柜") || nodeTitle.includes("主升压站")) {
+        return `${domain}-关口`;
+      }
+      if (nodeTitle.includes("方阵") || nodeTitle.includes("集电线路")) return `${domain}-支路`;
+      if (nodeTitle.includes("逆变器")) return `${domain}-逆变器`;
+      if (nodeTitle.includes("PCS")) return `${domain}-PCS`;
+      if (nodeTitle.includes("BMS")) return `${domain}-BMS`;
+      if (nodeTitle.includes("储能柜") || nodeTitle.includes("储能单元")) return `${domain}-储能单元`;
+      if (nodeTitle.includes("充电区")) return `${domain}-充电分区`;
+      if (nodeTitle.includes("充电桩")) return `${domain}-充电桩`;
+      return `${domain}-节点`;
+    }
+
+    function getTopologyModelOptions(parentTitle, stationType) {
+      const domain = getTopologyDomainLabel(stationType);
+      if (parentTitle.includes("站") || parentTitle.includes("电站")) {
+        return [`${domain}-关口`, `${domain}-支路`, `${domain}-设备分组`];
+      }
+      if (parentTitle.includes("关口") || parentTitle.includes("并网") || parentTitle.includes("总柜") || parentTitle.includes("主升压站")) {
+        return [`${domain}-并网`, `${domain}-逆变器`, `${domain}-PCS`, `${domain}-充电桩`];
+      }
+      if (parentTitle.includes("支路") || parentTitle.includes("方阵") || parentTitle.includes("线路")) {
+        return [`${domain}-逆变器`, `${domain}-PCS`, `${domain}-子支路`];
+      }
+      return [`${domain}-子节点`, `${domain}-设备节点`, `${domain}-支路节点`];
+    }
+
+    function createTopologyDrawerState(mode, payload) {
+      return {
+        mode,
+        nodeTitle: payload.nodeTitle || "",
+        parentTitle: payload.parentTitle || "",
+        spaceModel: payload.spaceModel || "",
+        stationType: payload.stationType || getTopologyStation().type,
+        quantity: payload.quantity || 10
+      };
+    }
+
+    function getDefaultTopologyDrawer(station) {
+      const defaultNode = (getTopologyNodes(station.type)[0] && getTopologyNodes(station.type)[0].title) || "";
+      return createTopologyDrawerState("edit", {
+        nodeTitle: defaultNode,
+        parentTitle: station.name,
+        spaceModel: getTopologyModelLabel(defaultNode, station.type),
+        stationType: station.type,
+        quantity: 10
+      });
+    }
+
     function getTopologyStation() {
       return dataStore.stations.find((item) => item.id === state.selectedTopologyStationId) || dataStore.stations[0];
     }
@@ -2334,16 +2547,34 @@
       return topologyTemplates[type] || topologyTemplates["发电类/分布式光伏"];
     }
 
-    function renderTopologyBranch(node, isRoot = false, stationName = "") {
+    function renderTopologyBranch(node, options = {}) {
+      const { isRoot = false, stationName = "", stationType = "", parentTitle = "" } = options;
       const children = node.children || [];
       const headerTitle = isRoot ? "根节点" : node.title;
+      const currentTitle = isRoot ? stationName : node.title;
+      const currentParentTitle = isRoot ? "场站管理" : parentTitle;
+      const currentSpaceModel = getTopologyModelLabel(currentTitle, stationType, isRoot);
+      const isSelected = Boolean(
+        state.topologyDrawer &&
+        state.topologyDrawer.mode === "edit" &&
+        state.topologyDrawer.nodeTitle === currentTitle &&
+        state.topologyDrawer.parentTitle === currentParentTitle
+      );
       const bodyHtml = isRoot
         ? `<div>${escapeHtml(stationName)}</div>`
         : `<button class="topology-link-button" type="button" data-action="toast" data-message="已模拟打开 ${node.title} 的关联设备">+ 去关联设备</button>`;
 
       return `
         <div class="topology-branch">
-          <div class="topology-card${isRoot ? " root" : ""}">
+          <div
+            class="topology-card${isRoot ? " root" : ""}${isSelected ? " selected" : ""}"
+            data-action="open-topology-drawer"
+            data-drawer-mode="edit"
+            data-node-title="${escapeHtml(currentTitle)}"
+            data-parent-title="${escapeHtml(currentParentTitle)}"
+            data-space-model="${escapeHtml(currentSpaceModel)}"
+            data-station-type="${escapeHtml(stationType)}"
+          >
             <div class="topology-card-header">
               <div class="topology-card-title">
                 <span class="topology-card-icon">${isRoot ? "●" : "▣"}</span>
@@ -2358,13 +2589,90 @@
               ${bodyHtml}
             </div>
           </div>
+          <button
+            class="topology-plus"
+            type="button"
+            data-action="open-topology-drawer"
+            data-drawer-mode="add"
+            data-parent-title="${escapeHtml(currentTitle)}"
+            data-space-model="${escapeHtml(getTopologyModelOptions(currentTitle, stationType)[0])}"
+            data-station-type="${escapeHtml(stationType)}"
+            data-node-title=""
+          >+</button>
           ${children.length ? `
-            <button class="topology-plus" type="button" data-action="toast" data-message="已模拟在 ${isRoot ? stationName : node.title} 下新增节点">+</button>
             <div class="topology-children ${children.length === 1 ? "single" : ""}">
-              ${children.map((child) => renderTopologyBranch(child, false, stationName)).join("")}
+              ${children.map((child) => renderTopologyBranch(child, {
+                isRoot: false,
+                stationName,
+                stationType,
+                parentTitle: currentTitle
+              })).join("")}
             </div>
           ` : ""}
         </div>
+      `;
+    }
+
+    function renderTopologyDrawer() {
+      if (!state.topologyDrawer) return "";
+
+      const drawer = state.topologyDrawer;
+      const isAdd = drawer.mode === "add";
+      const modelOptions = getTopologyModelOptions(drawer.parentTitle, drawer.stationType);
+      const selectedModel = drawer.spaceModel || modelOptions[0];
+      const title = isAdd ? "新增节点" : "编辑节点";
+      const submitMessage = isAdd
+        ? `已模拟新增 ${drawer.quantity} 个并联的同类型节点`
+        : `已模拟更新节点 ${drawer.nodeTitle || "未命名节点"}`;
+
+      return `
+        <aside class="topology-drawer">
+          <div class="topology-drawer-header">
+            <div class="topology-drawer-title">
+              <span class="topology-drawer-icon">▣</span>
+              <span>${title}</span>
+            </div>
+            <button class="topology-drawer-close" type="button" data-action="close-topology-drawer">&times;</button>
+          </div>
+          <div class="topology-drawer-body">
+            <div class="topology-drawer-form">
+              <div class="topology-drawer-row">
+                <label>上级节点:</label>
+                <input type="text" value="${escapeHtml(drawer.parentTitle)}" readonly />
+              </div>
+              <div class="topology-drawer-row">
+                <label>空间模型:</label>
+                <select>
+                  ${modelOptions.map((item) => `<option ${item === selectedModel ? "selected" : ""}>${item}</option>`).join("")}
+                </select>
+              </div>
+              <div class="topology-drawer-row">
+                <label class="required">节点名称:</label>
+                <input type="text" value="${escapeHtml(drawer.nodeTitle || "")}" placeholder="请输入节点名称" />
+              </div>
+              ${isAdd ? `
+                <div class="topology-drawer-row">
+                  <label class="required">节点数量:</label>
+                  <input type="number" min="1" value="${drawer.quantity}" />
+                </div>
+              ` : ""}
+            </div>
+            ${isAdd ? `
+              <div class="topology-drawer-tip">
+                优化方案模拟：当这里填写 <strong>${drawer.quantity}</strong> 时，点击“确定”后会自动生成 ${drawer.quantity} 个并联的同类型节点，
+                并统一挂载在“${escapeHtml(drawer.parentTitle)}”下，减少逐个新增和逐个关联设备的重复操作。
+              </div>
+            ` : `
+              <div class="topology-drawer-tip">
+                当前为静态原型抽屉。点击不同节点，可在右侧切换对应的编辑表单；点击节点下方的 “+” 按钮，可打开新增节点表单并配置节点数量。
+              </div>
+            `}
+          </div>
+          <div class="topology-drawer-footer">
+            <button class="btn btn-default" type="button" data-action="close-topology-drawer">取消</button>
+            <button class="btn btn-primary" type="button" data-action="toast" data-message="${submitMessage}">确定</button>
+          </div>
+        </aside>
       `;
     }
 
@@ -2391,12 +2699,20 @@
                 <button class="btn btn-primary" type="button" data-action="fit-topology">全屏显示</button>
               </div>
             </div>
-            <div class="topology-stage" id="topology-stage">
-              <div class="topology-stage-inner" id="topology-stage-inner">
-                <div class="topology-tree" id="topology-tree">
-                  ${renderTopologyBranch({ title: "根节点", children: topologyNodes }, true, station.name)}
+            <div class="topology-workbench ${state.topologyDrawer ? "drawer-open" : ""}">
+              <div class="topology-stage" id="topology-stage">
+                <div class="topology-stage-inner" id="topology-stage-inner">
+                  <div class="topology-tree" id="topology-tree">
+                    ${renderTopologyBranch({ title: "根节点", children: topologyNodes }, {
+                      isRoot: true,
+                      stationName: station.name,
+                      stationType: station.type,
+                      parentTitle: "场站管理"
+                    })}
+                  </div>
                 </div>
               </div>
+              ${renderTopologyDrawer()}
             </div>
           </section>
         </div>
@@ -2765,13 +3081,35 @@
 
       if (action === "open-topology") {
         state.selectedTopologyStationId = Number(actionButton.dataset.id);
+        state.topologyDrawer = getDefaultTopologyDrawer(
+          dataStore.stations.find((item) => item.id === state.selectedTopologyStationId) || dataStore.stations[0]
+        );
         state.currentView = "topology-config";
+        render();
+        return;
+      }
+
+      if (action === "open-topology-drawer") {
+        state.topologyDrawer = createTopologyDrawerState(actionButton.dataset.drawerMode || "edit", {
+          nodeTitle: actionButton.dataset.nodeTitle || "",
+          parentTitle: actionButton.dataset.parentTitle || "",
+          spaceModel: actionButton.dataset.spaceModel || "",
+          stationType: actionButton.dataset.stationType || getTopologyStation().type,
+          quantity: 10
+        });
+        render();
+        return;
+      }
+
+      if (action === "close-topology-drawer") {
+        state.topologyDrawer = null;
         render();
         return;
       }
 
       if (action === "back-topology") {
         state.currentView = "station-management";
+        state.topologyDrawer = null;
         render();
         return;
       }
