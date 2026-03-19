@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>能源互联网平台原型</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231677ff'/%3E%3Ctext x='16' y='21' text-anchor='middle' font-size='16' fill='white'%3E%E8%83%BD%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --line: #e3e8f2;
+      --text: #162033;
+      --muted: #60708a;
+      --primary: #1677ff;
+      --primary-soft: #e8f2ff;
+      --success: #18a058;
+      --warning: #fa8c16;
+      --danger: #f5222d;
+      --shadow: 0 18px 42px rgba(16, 36, 94, 0.08);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(22, 119, 255, 0.12), transparent 28%),
+        linear-gradient(180deg, #f7f9fd 0%, #eef3f9 100%);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 268px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 24px 18px;
+      background:
+        linear-gradient(180deg, rgba(10, 26, 59, 0.96), rgba(19, 39, 78, 0.96)),
+        #102347;
+      color: #eef4ff;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .brand {
+      padding: 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #4da4ff, #7dd3fc);
+      color: #102347;
+      font-weight: 700;
+      font-size: 20px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand p {
+      margin: 8px 0 0;
+      color: rgba(238, 244, 255, 0.72);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-group-title {
+      padding: 0 12px;
+      color: rgba(238, 244, 255, 0.56);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: rgba(238, 244, 255, 0.86);
+      text-align: left;
+      padding: 13px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(77, 164, 255, 0.24), rgba(125, 211, 252, 0.12));
+      color: #fff;
+      transform: translateX(2px);
+    }
+
+    .sidebar-note {
+      margin-top: auto;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(238, 244, 255, 0.78);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .main {
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .crumbs h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.01em;
+    }
+
+    .crumbs p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(22, 119, 255, 0.12);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #52c41a, #95de64);
+      box-shadow: 0 0 0 6px rgba(82, 196, 26, 0.14);
+    }
+
+    .page-layout {
+      display: grid;
+      gap: 20px;
+    }
+
+    .page-layout.dual {
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      align-items: start;
+    }
+
+    .split-panels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+
+    .device-type-shell .card-body {
+      padding: 0;
+    }
+
+    .device-type-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      align-items: start;
+    }
+
+    .device-pane {
+      padding: 22px;
+    }
+
+    .device-pane + .device-pane {
+      border-left: 1px solid var(--line);
+    }
+
+    .device-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .device-toolbar.right {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .device-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .segmented-tabs {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 14px;
+      background: #f3f6fb;
+      border: 1px solid #e1e8f3;
+    }
+
+    .segmented-tab {
+      min-height: 38px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    .segmented-tab.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: 0 6px 16px rgba(17, 48, 107, 0.08);
+    }
+
+    .table-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 4px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-pill {
+      min-width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 12px;
+      border: 1px solid #d9e3f1;
+      background: #fff;
+      color: var(--muted);
+    }
+
+    .page-pill.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: rgba(22, 119, 255, 0.18);
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(227, 232, 242, 0.92);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .card-title h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .card-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .search-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px 16px;
+      align-items: end;
+    }
+
+    .search-card .card-body {
+      padding: 16px 20px;
+    }
+
+    .search-card.compact .card-body {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .search-card.compact .search-grid {
+      flex: 1;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 220px));
+    }
+
+    .search-card.compact .form-actions {
+      margin-left: auto;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid #d7dfeb;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      transition: 160ms ease;
+    }
+
+    .field textarea {
+      min-height: 94px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: rgba(22, 119, 255, 0.48);
+      box-shadow: 0 0 0 4px rgba(22, 119, 255, 0.12);
+    }
+
+    .form-actions,
+    .list-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: 160ms ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1677ff, #4096ff);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(22, 119, 255, 0.18);
+    }
+
+    .btn-default {
+      background: #fff;
+      color: var(--text);
+      border-color: #d7dfeb;
+    }
+
+    .btn-link {
+      background: transparent;
+      border: 0;
+      color: var(--primary);
+      padding: 0;
+      min-height: auto;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: var(--panel-soft);
+      color: var(--muted);
+      border: 1px solid #e4ebf6;
+      font-size: 13px;
+    }
+
+    .chip.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border-color: rgba(22, 119, 255, 0.2);
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th,
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr {
+      transition: 140ms ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(22, 119, 255, 0.04);
+    }
+
+    tbody tr.selected {
+      background: rgba(22, 119, 255, 0.08);
+    }
+
+    .cell-title {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .cell-sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .tag-blue {
+      background: rgba(22, 119, 255, 0.1);
+      color: #1668dc;
+    }
+
+    .tag-green {
+      background: rgba(24, 160, 88, 0.12);
+      color: #157347;
+    }
+
+    .tag-orange {
+      background: rgba(250, 140, 22, 0.12);
+      color: #c56a14;
+    }
+
+    .tag-red {
+      background: rgba(245, 34, 45, 0.1);
+      color: #cf1322;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      white-space: nowrap;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff, #f7faff);
+      border: 1px solid #e6edf8;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      font-size: 24px;
+      letter-spacing: 0.02em;
+    }
+
+    .hint-box {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(22, 119, 255, 0.08), rgba(24, 160, 88, 0.06));
+      border: 1px solid rgba(22, 119, 255, 0.12);
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .modal-mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(7, 16, 32, 0.42);
+      backdrop-filter: blur(8px);
+      z-index: 30;
+    }
+
+    .modal-mask.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(880px, 100%);
+      max-height: calc(100vh - 48px);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid rgba(227, 232, 242, 0.92);
+      box-shadow: 0 24px 60px rgba(8, 19, 44, 0.22);
+      overflow: hidden;
+    }
+
+    .modal-header,
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--line);
+      border-bottom: 0;
+    }
+
+    .modal-body {
+      padding: 22px;
+      overflow: auto;
+    }
+
+    .modal-title h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .modal-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .form-grid.single {
+      grid-template-columns: 1fr;
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    .empty {
+      padding: 36px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1180px) {
+      .app-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        padding-bottom: 18px;
+      }
+
+      .page-layout.dual {
+        grid-template-columns: 1fr;
+      }
+
+      .split-panels {
+        grid-template-columns: 1fr;
+      }
+
+      .device-type-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .device-pane + .device-pane {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .search-card.compact .card-body {
+        display: block;
+      }
+
+      .search-card.compact .form-actions {
+        margin-top: 16px;
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .main {
+        padding: 16px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .form-grid,
+      .form-grid.single {
+        grid-template-columns: 1fr;
+      }
+
+      .span-2 {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">能</div>
+        <h1>能源互联网平台</h1>
+        <p>基于 PRD 输出的本地静态原型，覆盖物联中台与业务平台核心页面。</p>
+      </div>
+      <div id="nav-root"></div>
+      <div class="sidebar-note">
+        原型说明：<br />
+        1. 保留 Ant Design / Vben Admin 风格的信息密度。<br />
+        2. 所有数据均为本地模拟。<br />
+        3. 场站模型、场站新增、设备新增包含动态主数据展示。
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="crumbs">
+          <h2 id="page-title">品牌厂商</h2>
+          <p id="page-desc">管理设备厂商与品牌信息，支持查询、新增与编辑展示。</p>
+        </div>
+        <div class="status-card">
+          <div class="status-dot"></div>
+          <div>
+            <strong>原型就绪</strong>
+            <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">可直接双击本文件或通过本地服务展示</div>
+          </div>
+        </div>
+      </div>
+      <div id="app"></div>
+    </main>
+  </div>
+
+  <div class="modal-mask" id="modal-mask" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <div class="modal-title">
+          <h3 id="modal-title"></h3>
+          <p id="modal-subtitle"></p>
+        </div>
+        <button class="btn btn-default" id="modal-close" type="button">关闭</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer">
+        <span style="color: var(--muted); font-size: 13px;">本原型仅用于结构与交互展示，不提交真实数据。</span>
+        <div class="form-actions">
+          <button class="btn btn-default" id="modal-cancel" type="button">取消</button>
+          <button class="btn btn-primary" id="modal-save" type="button">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const navItems = [
+      {
+        group: "物联中台",
+        items: [
+          { id: "device-types", label: "设备类型", desc: "设备类型主数据维护，当前为预留空白页" },
+          { id: "brands", label: "品牌厂商", desc: "管理设备厂商与品牌信息" },
+          { id: "station-models", label: "场站模型", desc: "维护场站类型模板与主数据配置" },
+          { id: "point-management", label: "点位管理", desc: "点位管理页面预留，当前为预留空白页" },
+          { id: "space-models", label: "空间模型", desc: "空间模型页面预留，当前为预留空白页" }
+        ]
+      },
+      {
+        group: "业务平台",
+        items: [
+          { id: "station-management", label: "场站管理", desc: "管理真实场站与拓扑状态" },
+          { id: "device-management", label: "设备管理", desc: "管理场站下的设备实例" }
+        ]
+      }
+    ];
+
+    const stationTypeOptions = [
+      "发电类/分布式光伏",
+      "发电类/风电配储",
+      "储能类/工商储能",
+      "用电类/商业负荷",
+      "用电类/充电站"
+    ];
+
+    const stationModelTypes = ["发电类", "储能类", "用电类"];
+    const deviceTypes = ["PCS", "逆变器", "电表", "充电桩", "BMS"];
+
+    const dataStore = {
+      brands: [
+        { id: 1, name: "阳曜智控", modelNo: "YX-3000", englishName: "SunEdge Controls" },
+        { id: 2, name: "海擎储能", modelNo: "HQ-BMS-88", englishName: "OceanPeak Energy" },
+        { id: 3, name: "迅驰电驱", modelNo: "XC-EV-12", englishName: "VoltRush Dynamics" },
+        { id: 4, name: "天矩传感", modelNo: "TJ-SENSE-9", englishName: "SkyMatrix Sensors" }
+      ],
+      stationModels: [
+        { id: 101, name: "集中式光伏", englishName: "Utility Solar", code: "GEN-PV-001", category: "发电类" },
+        { id: 102, name: "工商业分布式光伏", englishName: "C&I Distributed Solar", code: "GEN-PV-002", category: "发电类" },
+        { id: 103, name: "户用分布式光伏", englishName: "Residential Solar", code: "GEN-PV-003", category: "发电类" },
+        { id: 104, name: "集中式风力", englishName: "Utility Wind", code: "GEN-WIND-001", category: "发电类" },
+        { id: 105, name: "分散式风力", englishName: "Distributed Wind", code: "GEN-WIND-002", category: "发电类" },
+        { id: 201, name: "风电配储", englishName: "Wind Plus Storage", code: "STO-HYB-001", category: "储能类" },
+        { id: 202, name: "光伏配储", englishName: "Solar Plus Storage", code: "STO-HYB-002", category: "储能类" },
+        { id: 203, name: "独立储能", englishName: "Standalone Storage", code: "STO-IND-001", category: "储能类" },
+        { id: 204, name: "台区储能", englishName: "Transformer Area Storage", code: "STO-TA-001", category: "储能类" },
+        { id: 205, name: "工商业储能", englishName: "C&I Storage", code: "STO-CI-001", category: "储能类" },
+        { id: 206, name: "户用储能", englishName: "Residential Storage", code: "STO-RES-001", category: "储能类" },
+        { id: 301, name: "充电站", englishName: "Charging Station", code: "LOAD-EV-001", category: "用电类" },
+        { id: 302, name: "工业负荷", englishName: "Industrial Load", code: "LOAD-IND-001", category: "用电类" },
+        { id: 303, name: "商业负荷", englishName: "Commercial Load", code: "LOAD-COM-001", category: "用电类" },
+        { id: 304, name: "公共设施负荷", englishName: "Public Facility Load", code: "LOAD-PUB-001", category: "用电类" },
+        { id: 305, name: "其他", englishName: "Other Load", code: "LOAD-OTH-001", category: "用电类" }
+      ],
+      deviceTypeCatalog: [
+        { id: 1, name: "户外一体柜", englishName: "outdoor cabinet", code: "a_123", parentType: "--" },
+        { id: 2, name: "空调", englishName: "air-conditioner", code: "air_2", parentType: "--" },
+        { id: 3, name: "环测仪", englishName: "weather sensor", code: "Weathers_1", parentType: "--" },
+        { id: 4, name: "充电枪", englishName: "charge gun", code: "gun_1", parentType: "充电桩" },
+        { id: 5, name: "充电桩", englishName: "charge pile", code: "pile_1", parentType: "--" },
+        { id: 6, name: "摄像头", englishName: "camera", code: "camera_1", parentType: "--" },
+        { id: 7, name: "录像机", englishName: "video recorder", code: "recorder_1", parentType: "--" },
+        { id: 8, name: "箱式变压器 A", englishName: "box type transformer", code: "trans_2", parentType: "--" },
+        { id: 9, name: "箱式变压器 B", englishName: "box type transformer", code: "trans_1", parentType: "--" },
+        { id: 10, name: "光伏进线柜", englishName: "pv incoming cabinet", code: "cabinet_3", parentType: "--" }
+      ],
+      deviceTypeMainData: {
+        1: [
+          { name: "额定容量", englishName: "rated capacity", code: "capacity_1", order: 1, required: true, inputType: "数字" }
+        ],
+        2: [
+          { name: "额定功率", englishName: "rated power", code: "power_1", order: 1, required: true, inputType: "数字" }
+        ],
+        3: [
+          { name: "采样周期", englishName: "sampling cycle", code: "sample_1", order: 1, required: true, inputType: "数字" }
+        ],
+        4: [
+          { name: "额定电流", englishName: "rated current", code: "current_1", order: 1, required: true, inputType: "数字" }
+        ],
+        5: [
+          { name: "枪口数量", englishName: "gun count", code: "gun_count_1", order: 1, required: true, inputType: "数字" }
+        ],
+        6: [
+          { name: "分辨率", englishName: "resolution", code: "camera_2", order: 1, required: false, inputType: "文本" }
+        ],
+        7: [
+          { name: "通道数", englishName: "channel count", code: "record_1", order: 1, required: true, inputType: "数字" }
+        ],
+        8: [
+          { name: "变压容量", englishName: "transformer capacity", code: "trans_cap_2", order: 1, required: true, inputType: "数字" }
+        ],
+        9: [
+          { name: "高压侧电压", englishName: "hv voltage", code: "hv_1", order: 1, required: true, inputType: "数字" }
+        ],
+        10: [
+          { name: "回路数量", englishName: "loop count", code: "loop_1", order: 1, required: true, inputType: "数字" }
+        ]
+      },
+      deviceTypePoints: {
+        1: [
+          { name: "柜内温度", code: "temp_001", unit: "°C", source: "遥测" },
+          { name: "柜门状态", code: "door_001", unit: "-", source: "遥信" }
+        ],
+        2: [
+          { name: "回风温度", code: "air_temp_01", unit: "°C", source: "遥测" },
+          { name: "运行状态", code: "air_run_01", unit: "-", source: "遥信" }
+        ],
+        3: [
+          { name: "环境湿度", code: "weather_h_01", unit: "%", source: "遥测" },
+          { name: "风速", code: "weather_w_01", unit: "m/s", source: "遥测" }
+        ],
+        4: [
+          { name: "枪线温度", code: "gun_temp_01", unit: "°C", source: "遥测" }
+        ],
+        5: [
+          { name: "充电状态", code: "pile_state_01", unit: "-", source: "遥信" },
+          { name: "输出电压", code: "pile_v_01", unit: "V", source: "遥测" }
+        ]
+      },
+      modelMainData: {
+        101: [
+          { name: "装机容量", englishName: "installedCapacity", code: "MD-101", order: 1, required: true, inputType: "数值" },
+          { name: "逆变器数量", englishName: "inverterCount", code: "MD-102", order: 2, required: true, inputType: "数值" },
+          { name: "组件类型", englishName: "moduleType", code: "MD-103", order: 3, required: false, inputType: "下拉" }
+        ],
+        102: [
+          { name: "屋顶面积", englishName: "roofArea", code: "MD-111", order: 1, required: true, inputType: "数值" },
+          { name: "并网电压等级", englishName: "gridVoltageLevel", code: "MD-112", order: 2, required: true, inputType: "下拉" },
+          { name: "组件数量", englishName: "moduleCount", code: "MD-113", order: 3, required: false, inputType: "数值" }
+        ],
+        103: [
+          { name: "户主名称", englishName: "ownerName", code: "MD-121", order: 1, required: true, inputType: "文本" },
+          { name: "装机容量", englishName: "installedCapacity", code: "MD-122", order: 2, required: true, inputType: "数值" },
+          { name: "接入方式", englishName: "accessType", code: "MD-123", order: 3, required: false, inputType: "下拉" }
+        ],
+        104: [
+          { name: "风机台数", englishName: "turbineCount", code: "MD-131", order: 1, required: true, inputType: "数值" },
+          { name: "单机容量", englishName: "unitCapacity", code: "MD-132", order: 2, required: true, inputType: "数值" },
+          { name: "轮毂高度", englishName: "hubHeight", code: "MD-133", order: 3, required: false, inputType: "数值" }
+        ],
+        105: [
+          { name: "风机类型", englishName: "turbineType", code: "MD-141", order: 1, required: true, inputType: "下拉" },
+          { name: "接入电压等级", englishName: "accessVoltage", code: "MD-142", order: 2, required: true, inputType: "下拉" },
+          { name: "年利用小时", englishName: "annualUtilizationHours", code: "MD-143", order: 3, required: false, inputType: "数值" }
+        ],
+        201: [
+          { name: "配储容量", englishName: "storageCapacity", code: "MD-201", order: 1, required: true, inputType: "数值" },
+          { name: "配储时长", englishName: "storageDuration", code: "MD-202", order: 2, required: true, inputType: "数值" },
+          { name: "控制策略", englishName: "controlStrategy", code: "MD-203", order: 3, required: false, inputType: "下拉" }
+        ],
+        202: [
+          { name: "光储容量比", englishName: "pvStorageRatio", code: "MD-211", order: 1, required: true, inputType: "数值" },
+          { name: "额定功率", englishName: "ratedPower", code: "MD-212", order: 2, required: true, inputType: "数值" },
+          { name: "运行模式", englishName: "operationMode", code: "MD-213", order: 3, required: false, inputType: "下拉" }
+        ],
+        203: [
+          { name: "额定容量", englishName: "ratedCapacity", code: "MD-221", order: 1, required: true, inputType: "数值" },
+          { name: "额定功率", englishName: "ratedPower", code: "MD-222", order: 2, required: true, inputType: "数值" },
+          { name: "电池类型", englishName: "batteryType", code: "MD-223", order: 3, required: false, inputType: "下拉" }
+        ],
+        204: [
+          { name: "所属台区", englishName: "transformerArea", code: "MD-231", order: 1, required: true, inputType: "文本" },
+          { name: "变压器容量", englishName: "transformerCapacity", code: "MD-232", order: 2, required: true, inputType: "数值" },
+          { name: "补偿模式", englishName: "compensationMode", code: "MD-233", order: 3, required: false, inputType: "下拉" }
+        ],
+        205: [
+          { name: "削峰功率", englishName: "peakShavingPower", code: "MD-241", order: 1, required: true, inputType: "数值" },
+          { name: "需量管理阈值", englishName: "demandThreshold", code: "MD-242", order: 2, required: true, inputType: "数值" },
+          { name: "并网点", englishName: "gridConnectionPoint", code: "MD-243", order: 3, required: false, inputType: "文本" }
+        ],
+        206: [
+          { name: "户储容量", englishName: "homeStorageCapacity", code: "MD-251", order: 1, required: true, inputType: "数值" },
+          { name: "备用电模式", englishName: "backupMode", code: "MD-252", order: 2, required: true, inputType: "下拉" },
+          { name: "接入户数", englishName: "householdCount", code: "MD-253", order: 3, required: false, inputType: "数值" }
+        ],
+        301: [
+          { name: "充电枪数量", englishName: "gunCount", code: "MD-301", order: 1, required: true, inputType: "数值" },
+          { name: "最大单枪功率", englishName: "singleGunPower", code: "MD-302", order: 2, required: true, inputType: "数值" },
+          { name: "停车位数量", englishName: "parkingSpaceCount", code: "MD-303", order: 3, required: false, inputType: "数值" }
+        ],
+        302: [
+          { name: "最大需量", englishName: "maximumDemand", code: "MD-311", order: 1, required: true, inputType: "数值" },
+          { name: "供电电压等级", englishName: "supplyVoltageLevel", code: "MD-312", order: 2, required: true, inputType: "下拉" },
+          { name: "负荷类别", englishName: "loadCategory", code: "MD-313", order: 3, required: false, inputType: "下拉" }
+        ],
+        303: [
+          { name: "营业面积", englishName: "businessArea", code: "MD-321", order: 1, required: true, inputType: "数值" },
+          { name: "空调容量", englishName: "hvacCapacity", code: "MD-322", order: 2, required: true, inputType: "数值" },
+          { name: "营业时段", englishName: "businessHours", code: "MD-323", order: 3, required: false, inputType: "文本" }
+        ],
+        304: [
+          { name: "设施类型", englishName: "facilityType", code: "MD-331", order: 1, required: true, inputType: "下拉" },
+          { name: "额定负荷", englishName: "ratedLoad", code: "MD-332", order: 2, required: true, inputType: "数值" },
+          { name: "保障等级", englishName: "serviceLevel", code: "MD-333", order: 3, required: false, inputType: "下拉" }
+        ],
+        305: [
+          { name: "负荷说明", englishName: "loadDescription", code: "MD-341", order: 1, required: true, inputType: "文本" },
+          { name: "接入容量", englishName: "connectedCapacity", code: "MD-342", order: 2, required: true, inputType: "数值" },
+          { name: "备注分类", englishName: "remarkCategory", code: "MD-343", order: 3, required: false, inputType: "下拉" }
+        ]
+      },
+      stations: [
+        {
+          id: 201,
+          name: "苏州工业园区储能站",
+          systemNo: "ST-2025-001",
+          type: "储能类/工商储能",
+          gridDate: "2025-04-18",
+          nature: "代运营",
+          owner: "刘昊-13810001122",
+          topology: "已配置",
+          location: "120.7254,31.3297"
+        },
+        {
+          id: 202,
+          name: "嘉兴秀洲分布式光伏",
+          systemNo: "ST-2025-004",
+          type: "发电类/分布式光伏",
+          gridDate: "2024-11-03",
+          nature: "自持",
+          owner: "王宁-13920001221",
+          topology: "已配置",
+          location: "120.6848,30.7601"
+        },
+        {
+          id: 203,
+          name: "上海临港充电示范站",
+          systemNo: "ST-2025-017",
+          type: "用电类/充电站",
+          gridDate: "2025-01-09",
+          nature: "代运营",
+          owner: "周倩-13711119888",
+          topology: "未配置",
+          location: "121.9208,30.8991"
+        }
+      ],
+      devices: [
+        {
+          id: 301,
+          name: "1# 储能 PCS",
+          code: "DEV-PCS-001",
+          type: "PCS",
+          brand: "海擎储能",
+          station: "苏州工业园区储能站"
+        },
+        {
+          id: 302,
+          name: "2# 光伏逆变器",
+          code: "DEV-PV-012",
+          type: "逆变器",
+          brand: "阳曜智控",
+          station: "嘉兴秀洲分布式光伏"
+        },
+        {
+          id: 303,
+          name: "直流快充桩 A1",
+          code: "DEV-EV-006",
+          type: "充电桩",
+          brand: "迅驰电驱",
+          station: "上海临港充电示范站"
+        }
+      ]
+    };
+
+    const state = {
+      currentView: "brands",
+      selectedDeviceTypeId: 2,
+      deviceTypeTab: "main-data",
+      selectedStationModelId: 101,
+      stationModelPage: 1,
+      filters: {
+        brands: { keyword: "" },
+        stationModels: { name: "", category: "" },
+        stationManagement: { name: "", type: "", topology: "" },
+        deviceManagement: { name: "", type: "", code: "", station: "", brand: "" }
+      },
+      modal: null
+    };
+
+    const app = document.getElementById("app");
+    const navRoot = document.getElementById("nav-root");
+    const pageTitle = document.getElementById("page-title");
+    const pageDesc = document.getElementById("page-desc");
+    const modalMask = document.getElementById("modal-mask");
+    const modalTitle = document.getElementById("modal-title");
+    const modalSubtitle = document.getElementById("modal-subtitle");
+    const modalBody = document.getElementById("modal-body");
+    const modalClose = document.getElementById("modal-close");
+    const modalCancel = document.getElementById("modal-cancel");
+    const modalSave = document.getElementById("modal-save");
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderNav() {
+      navRoot.innerHTML = navItems.map((group) => {
+        const itemsHtml = group.items.map((item) => `
+          <button class="nav-item ${state.currentView === item.id ? "active" : ""}" type="button" data-nav="${item.id}">
+            ${item.label}
+          </button>
+        `).join("");
+        return `
+          <div class="nav-group">
+            <div class="nav-group-title">${group.group}</div>
+            <div class="nav-list">${itemsHtml}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTopbar() {
+      const meta = navItems.flatMap((group) => group.items).find((item) => item.id === state.currentView);
+      pageTitle.textContent = meta.label;
+      pageDesc.textContent = meta.desc;
+    }
+
+    function tagClass(type) {
+      if (type === "已配置" || type === true) return "tag tag-green";
+      if (type === "未配置" || type === false) return "tag tag-orange";
+      if (String(type).includes("发电")) return "tag tag-blue";
+      if (String(type).includes("储能")) return "tag tag-green";
+      if (String(type).includes("用电")) return "tag tag-orange";
+      return "tag tag-blue";
+    }
+
+    function renderMetrics(items) {
+      return `
+        <div class="metric-row">
+          ${items.map((item) => `
+            <div class="metric">
+              <span>${item.label}</span>
+              <strong>${item.value}</strong>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderSearchCard(fieldsHtml, actionsHtml = "", options = {}) {
+      const compactClass = options.compact ? " compact" : "";
+      return `
+        <section class="card search-card${compactClass}">
+          <div class="card-body">
+            <div class="search-grid">
+              ${fieldsHtml}
+            </div>
+            ${actionsHtml ? `<div class="form-actions"${options.compact ? "" : ` style="margin-top: 16px;"`}>${actionsHtml}</div>` : ""}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderBrands() {
+      const keyword = state.filters.brands.keyword.trim();
+      const rows = dataStore.brands.filter((item) => {
+        return !keyword || [item.name, item.modelNo, item.englishName].some((val) => val.includes(keyword));
+      });
+
+      return `
+        <div class="page-layout">
+          ${renderSearchCard(
+            `
+              <div class="field">
+                <label>厂商品牌名称</label>
+                <input type="text" data-filter-view="brands" data-filter-key="keyword" placeholder="请输入品牌名称" value="${escapeHtml(keyword)}" />
+              </div>
+            `,
+            `
+              <button class="btn btn-primary" type="button" data-action="search">查询</button>
+              <button class="btn btn-default" type="button" data-action="reset-filters" data-view="brands">重置</button>
+            `,
+            { compact: true }
+          )}
+          <section class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>列表区</h3>
+                <p>品牌厂商维护列表，最右侧为操作区。</p>
+              </div>
+              <div class="list-actions">
+                <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="brand">新增品牌厂商</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>厂商品牌名称</th>
+                    <th>模型编号</th>
+                    <th>英文名称</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.length ? rows.map((item) => `
+                    <tr>
+                      <td>
+                        <div class="cell-title">${item.name}</div>
+                      </td>
+                      <td>${item.modelNo}</td>
+                      <td>${item.englishName}</td>
+                      <td>
+                        <div class="table-actions">
+                          <button class="btn-link" type="button" data-action="open-modal" data-modal="brand">编辑</button>
+                          <button class="btn-link" type="button" data-action="toast" data-message="已模拟删除 ${item.name}">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("") : `
+                    <tr><td colspan="4"><div class="empty">没有匹配到品牌厂商数据</div></td></tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderDeviceTypes() {
+      const selected = dataStore.deviceTypeCatalog.find((item) => item.id === state.selectedDeviceTypeId) || dataStore.deviceTypeCatalog[0];
+      const mainDataRows = dataStore.deviceTypeMainData[selected.id] || [];
+      const pointRows = dataStore.deviceTypePoints[selected.id] || [];
+
+      return `
+        <div class="page-layout">
+          <section class="card device-type-shell">
+            <div class="card-body">
+              <div class="device-type-layout">
+                <div class="device-pane">
+                  <div class="device-toolbar">
+                    <div class="card-title">
+                      <h3>设备类型列表</h3>
+                      <p>参照原始页面结构还原，点击左侧设备类型切换右侧详情。</p>
+                    </div>
+                    <div class="device-toolbar-actions">
+                      <button class="btn btn-primary" type="button" data-action="toast" data-message="新增设备类型">新增</button>
+                    </div>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>设备类型名称</th>
+                          <th>英文名称</th>
+                          <th>设备类型编码</th>
+                          <th>父设备类型</th>
+                          <th>操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${dataStore.deviceTypeCatalog.map((item) => `
+                          <tr class="${selected && item.id === selected.id ? "selected" : ""}" data-action="select-device-type" data-id="${item.id}">
+                            <td><div class="cell-title" style="${selected && item.id === selected.id ? "color: var(--primary);" : ""}">${item.name}</div></td>
+                            <td>${item.englishName}</td>
+                            <td>${item.code}</td>
+                            <td>${item.parentType}</td>
+                            <td>
+                              <div class="table-actions">
+                                <button class="btn-link" type="button" data-action="toast" data-message="编辑 ${item.name}">编辑</button>
+                                <button class="btn-link" type="button" data-action="toast" data-message="删除 ${item.name}">删除</button>
+                              </div>
+                            </td>
+                          </tr>
+                        `).join("")}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="table-footer">
+                    <span>共 32 条</span>
+                    <div class="pagination">
+                      <span class="page-pill active">1</span>
+                      <span class="page-pill">2</span>
+                      <span class="page-pill">3</span>
+                      <span class="page-pill">4</span>
+                      <span class="page-pill">10 条/页</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="device-pane">
+                  <div class="device-toolbar right">
+                    <div class="segmented-tabs">
+                      <button class="segmented-tab ${state.deviceTypeTab === "main-data" ? "active" : ""}" type="button" data-action="switch-device-type-tab" data-tab="main-data">主数据列表</button>
+                      <button class="segmented-tab ${state.deviceTypeTab === "points" ? "active" : ""}" type="button" data-action="switch-device-type-tab" data-tab="points">点位列表</button>
+                    </div>
+                    <div class="device-toolbar-actions">
+                      ${state.deviceTypeTab === "main-data" ? `
+                        <button class="btn btn-primary" type="button" data-action="toast" data-message="新增主数据">新增主数据</button>
+                        <button class="btn btn-default" type="button" data-action="toast" data-message="导入主数据">导入主数据</button>
+                      ` : `
+                        <button class="btn btn-primary" type="button" data-action="toast" data-message="新增点位">新增点位</button>
+                        <button class="btn btn-default" type="button" data-action="toast" data-message="导入点位">导入点位</button>
+                      `}
+                    </div>
+                  </div>
+                  <div class="chip-row" style="margin-bottom: 16px;">
+                    <span class="chip active">${selected.name}</span>
+                    <span class="chip">${selected.code}</span>
+                    <span class="chip">${selected.parentType === "--" ? "顶级类型" : `父级：${selected.parentType}`}</span>
+                  </div>
+                  <div class="table-wrap">
+                    <table>
+                      ${state.deviceTypeTab === "main-data" ? `
+                        <thead>
+                          <tr>
+                            <th>主数据名称</th>
+                            <th>英文名称</th>
+                            <th>主数据编码</th>
+                            <th>主数据排序</th>
+                            <th>是否必填</th>
+                            <th>录入类型</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          ${mainDataRows.length ? mainDataRows.map((item) => `
+                            <tr>
+                              <td>${item.name}</td>
+                              <td>${item.englishName}</td>
+                              <td>${item.code}</td>
+                              <td>${item.order}</td>
+                              <td>${item.required ? "是" : "否"}</td>
+                              <td>${item.inputType}</td>
+                            </tr>
+                          `).join("") : `
+                            <tr><td colspan="6"><div class="empty">当前设备类型暂无主数据</div></td></tr>
+                          `}
+                        </tbody>
+                      ` : `
+                        <thead>
+                          <tr>
+                            <th>点位名称</th>
+                            <th>点位编码</th>
+                            <th>单位</th>
+                            <th>数据来源</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          ${pointRows.length ? pointRows.map((item) => `
+                            <tr>
+                              <td>${item.name}</td>
+                              <td>${item.code}</td>
+                              <td>${item.unit}</td>
+                              <td>${item.source}</td>
+                            </tr>
+                          `).join("") : `
+                            <tr><td colspan="4"><div class="empty">当前设备类型暂无点位数据</div></td></tr>
+                          `}
+                        </tbody>
+                      `}
+                    </table>
+                  </div>
+                  <div class="table-footer">
+                    <span>共 ${state.deviceTypeTab === "main-data" ? mainDataRows.length : pointRows.length} 条</span>
+                    <div class="pagination">
+                      <span class="page-pill active">1</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderBlankView(title) {
+      return `
+        <div class="page-layout">
+          <section class="card">
+            <div class="card-body">
+              <div class="empty" style="padding: 96px 18px;">
+                ${title} 页面暂未设计，当前保留为空白界面。
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderStationModels() {
+      const filters = state.filters.stationModels;
+      const modelRows = dataStore.stationModels.filter((item) => {
+        const matchName = !filters.name || item.name.includes(filters.name) || item.englishName.includes(filters.name);
+        const matchCategory = !filters.category || item.category === filters.category;
+        return matchName && matchCategory;
+      });
+      const pageSize = 4;
+      const totalPages = Math.max(1, Math.ceil(modelRows.length / pageSize));
+      const currentPage = Math.min(state.stationModelPage, totalPages);
+      const pagedModelRows = modelRows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+      const selected = dataStore.stationModels.find((item) => item.id === state.selectedStationModelId) || modelRows[0];
+      const mainDataRows = selected ? (dataStore.modelMainData[selected.id] || []) : [];
+
+      return `
+        <div class="page-layout">
+          ${renderSearchCard(
+            `
+              <div class="field">
+                <label>场站名称</label>
+                <input type="text" data-filter-view="stationModels" data-filter-key="name" placeholder="请输入场站名称" value="${escapeHtml(filters.name)}" />
+              </div>
+              <div class="field">
+                <label>所属类型</label>
+                <select data-filter-view="stationModels" data-filter-key="category">
+                  <option value="">全部类型</option>
+                  ${stationModelTypes.map((type) => `
+                    <option value="${type}" ${filters.category === type ? "selected" : ""}>${type}</option>
+                  `).join("")}
+                </select>
+              </div>
+            `,
+            `
+              <button class="btn btn-primary" type="button" data-action="search">查询</button>
+              <button class="btn btn-default" type="button" data-action="reset-filters" data-view="stationModels">重置</button>
+            `,
+            { compact: true }
+          )}
+          <section class="card">
+            <div class="device-type-layout">
+              <div class="device-pane">
+                <div class="device-toolbar">
+                  <div class="card-title">
+                    <h3>场站类型列表</h3>
+                    <p>点击左侧行，右侧展示对应主数据配置。</p>
+                  </div>
+                  <div class="device-toolbar-actions">
+                    <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station-type">新增场站类型</button>
+                  </div>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>场站名称</th>
+                        <th>英文名称</th>
+                        <th>模型编码</th>
+                        <th>所属类型</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${pagedModelRows.length ? pagedModelRows.map((item) => `
+                        <tr class="${selected && item.id === selected.id ? "selected" : ""}" data-action="select-station-model" data-id="${item.id}">
+                          <td>
+                            <div class="cell-title">${item.name}</div>
+                          </td>
+                          <td>${item.englishName}</td>
+                          <td>${item.code}</td>
+                          <td><span class="${tagClass(item.category)}">${item.category}</span></td>
+                          <td>
+                            <div class="table-actions">
+                              <button class="btn-link" type="button" data-action="open-modal" data-modal="station-type">编辑</button>
+                              <button class="btn-link" type="button" data-action="toast" data-message="已模拟删除 ${item.name}">删除</button>
+                            </div>
+                          </td>
+                        </tr>
+                      `).join("") : `
+                        <tr><td colspan="5"><div class="empty">没有匹配的场站类型</div></td></tr>
+                      `}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="table-footer">
+                  <span>共 ${modelRows.length} 条</span>
+                  <div class="pagination">
+                    ${Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `
+                      <button class="page-pill ${page === currentPage ? "active" : ""}" type="button" data-action="switch-station-model-page" data-page="${page}">
+                        ${page}
+                      </button>
+                    `).join("")}
+                    <span class="page-pill">${pageSize} 条/页</span>
+                  </div>
+                </div>
+              </div>
+              <div class="device-pane">
+                <div class="device-toolbar">
+                  <div class="card-title">
+                    <h3>主数据列表区</h3>
+                    <p>${selected ? `${selected.name} 的主数据配置` : "请选择左侧场站类型"}</p>
+                  </div>
+                  <div class="device-toolbar-actions">
+                    <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station-main-data">新增主数据</button>
+                  </div>
+                </div>
+                ${selected ? `
+                  <div class="chip-row" style="margin-bottom: 18px;">
+                    <span class="chip active">${selected.name}</span>
+                    <span class="chip">${selected.code}</span>
+                    <span class="chip">${selected.category}</span>
+                  </div>
+                ` : ""}
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>主数据名称</th>
+                        <th>英文名称</th>
+                        <th>主数据编码</th>
+                        <th>主数据排序</th>
+                        <th>是否必填</th>
+                        <th>录入类型</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${mainDataRows.length ? mainDataRows.map((item) => `
+                        <tr>
+                          <td>${item.name}</td>
+                          <td>${item.englishName}</td>
+                          <td>${item.code}</td>
+                          <td>${item.order}</td>
+                          <td><span class="${tagClass(item.required)}">${item.required ? "必填" : "选填"}</span></td>
+                          <td>${item.inputType}</td>
+                          <td>
+                            <div class="table-actions">
+                              <button class="btn-link" type="button" data-action="open-modal" data-modal="station-main-data">编辑</button>
+                              <button class="btn-link" type="button" data-action="toast" data-message="已模拟删除 ${item.name}">删除</button>
+                            </div>
+                          </td>
+                        </tr>
+                      `).join("") : `
+                        <tr><td colspan="7"><div class="empty">当前场站类型暂无主数据</div></td></tr>
+                      `}
+                    </tbody>
+                  </table>
+                </div>
+                <div class="hint-box">
+                  交互说明：上方筛选表单横跨整行，下方左右两列表共享同一白色卡片。点击左侧场站类型后，右侧主数据表格实时切换。
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderStationManagement() {
+      const filters = state.filters.stationManagement;
+      const rows = dataStore.stations.filter((item) => {
+        const matchName = !filters.name || item.name.includes(filters.name);
+        const matchType = !filters.type || item.type === filters.type;
+        const matchTopology = !filters.topology || item.topology === filters.topology;
+        return matchName && matchType && matchTopology;
+      });
+
+      return `
+        <div class="page-layout">
+          ${renderSearchCard(
+            `
+              <div class="field">
+                <label>场站名称</label>
+                <input type="text" data-filter-view="stationManagement" data-filter-key="name" placeholder="请输入场站名称" value="${escapeHtml(filters.name)}" />
+              </div>
+              <div class="field">
+                <label>场站类型</label>
+                <select data-filter-view="stationManagement" data-filter-key="type">
+                  <option value="">全部类型</option>
+                  ${stationTypeOptions.map((item) => `
+                    <option value="${item}" ${filters.type === item ? "selected" : ""}>${item}</option>
+                  `).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>拓扑状态</label>
+                <select data-filter-view="stationManagement" data-filter-key="topology">
+                  <option value="">全部状态</option>
+                  <option value="已配置" ${filters.topology === "已配置" ? "selected" : ""}>已配置</option>
+                  <option value="未配置" ${filters.topology === "未配置" ? "selected" : ""}>未配置</option>
+                </select>
+              </div>
+            `,
+            `
+              <button class="btn btn-primary" type="button" data-action="search">查询</button>
+              <button class="btn btn-default" type="button" data-action="reset-filters" data-view="stationManagement">重置</button>
+            `,
+            { compact: true }
+          )}
+          <section class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>列表区</h3>
+                <p>场站管理列表，操作支持拓扑配置、编辑及更多动作展示。</p>
+              </div>
+              <div class="list-actions">
+                <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station">新增场站</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>场站名称</th>
+                    <th>系统编号</th>
+                    <th>场站类型</th>
+                    <th>并网日期</th>
+                    <th>场站性质</th>
+                    <th>运维负责人-联系电话</th>
+                    <th>拓扑状态</th>
+                    <th>经纬度</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.length ? rows.map((item) => `
+                    <tr>
+                      <td>
+                        <div class="cell-title">${item.name}</div>
+                      </td>
+                      <td>${item.systemNo}</td>
+                      <td><span class="${tagClass(item.type)}">${item.type}</span></td>
+                      <td>${item.gridDate}</td>
+                      <td>${item.nature}</td>
+                      <td>${item.owner}</td>
+                      <td><span class="${tagClass(item.topology)}">${item.topology}</span></td>
+                      <td>${item.location}</td>
+                      <td>
+                        <div class="table-actions">
+                          <button class="btn-link" type="button" data-action="toast" data-message="打开 ${item.name} 的拓扑配置">拓扑配置</button>
+                          <button class="btn-link" type="button" data-action="open-modal" data-modal="station">编辑</button>
+                          <button class="btn-link" type="button" data-action="toast" data-message="更多操作：上下线、删除场站">更多</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("") : `
+                    <tr><td colspan="9"><div class="empty">没有匹配的场站数据</div></td></tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderDeviceManagement() {
+      const filters = state.filters.deviceManagement;
+      const rows = dataStore.devices.filter((item) => {
+        const matchName = !filters.name || item.name.includes(filters.name);
+        const matchType = !filters.type || item.type === filters.type;
+        const matchCode = !filters.code || item.code.includes(filters.code);
+        const matchStation = !filters.station || item.station.includes(filters.station);
+        const matchBrand = !filters.brand || item.brand.includes(filters.brand);
+        return matchName && matchType && matchCode && matchStation && matchBrand;
+      });
+
+      return `
+        <div class="page-layout">
+          ${renderSearchCard(
+            `
+              <div class="field">
+                <label>设备名称</label>
+                <input type="text" data-filter-view="deviceManagement" data-filter-key="name" placeholder="请输入设备名称" value="${escapeHtml(filters.name)}" />
+              </div>
+              <div class="field">
+                <label>设备类型</label>
+                <select data-filter-view="deviceManagement" data-filter-key="type">
+                  <option value="">全部类型</option>
+                  ${deviceTypes.map((item) => `
+                    <option value="${item}" ${filters.type === item ? "selected" : ""}>${item}</option>
+                  `).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>设备编码</label>
+                <input type="text" data-filter-view="deviceManagement" data-filter-key="code" placeholder="请输入设备编码" value="${escapeHtml(filters.code)}" />
+              </div>
+              <div class="field">
+                <label>所属场站</label>
+                <input type="text" data-filter-view="deviceManagement" data-filter-key="station" placeholder="请输入所属场站" value="${escapeHtml(filters.station)}" />
+              </div>
+              <div class="field">
+                <label>品牌厂商</label>
+                <input type="text" data-filter-view="deviceManagement" data-filter-key="brand" placeholder="请输入品牌厂商" value="${escapeHtml(filters.brand)}" />
+              </div>
+            `,
+            `
+              <button class="btn btn-primary" type="button" data-action="search">查询</button>
+              <button class="btn btn-default" type="button" data-action="reset-filters" data-view="deviceManagement">重置</button>
+            `
+          )}
+          <section class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>列表区</h3>
+                <p>设备实例管理列表，支持新增设备与基础维护动作。</p>
+              </div>
+              <div class="list-actions">
+                <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="device">新增设备</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>设备名称</th>
+                    <th>设备编码</th>
+                    <th>设备类型</th>
+                    <th>品牌厂商</th>
+                    <th>所属场站</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${rows.length ? rows.map((item) => `
+                    <tr>
+                      <td>
+                        <div class="cell-title">${item.name}</div>
+                      </td>
+                      <td>${item.code}</td>
+                      <td><span class="${tagClass(item.type)}">${item.type}</span></td>
+                      <td>${item.brand}</td>
+                      <td>${item.station}</td>
+                      <td>
+                        <div class="table-actions">
+                          <button class="btn-link" type="button" data-action="open-modal" data-modal="device">编辑</button>
+                          <button class="btn-link" type="button" data-action="toast" data-message="已模拟删除 ${item.name}">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("") : `
+                    <tr><td colspan="6"><div class="empty">没有匹配的设备数据</div></td></tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function getStationMainDataFields(type) {
+      if (type.includes("分布式光伏")) {
+        return ["额定容量", "并网电压等级", "组件数量"];
+      }
+      if (type.includes("工商储能")) {
+        return ["额定功率", "额定容量", "电池簇数量"];
+      }
+      if (type.includes("充电站")) {
+        return ["充电枪数量", "最大单枪功率", "停车位数量"];
+      }
+      return ["额定容量", "额定功率"];
+    }
+
+    function getDeviceMainDataFields(type) {
+      const map = {
+        PCS: ["额定功率", "交流侧电压", "冷却方式"],
+        逆变器: ["额定功率", "MPPT 路数", "最大输入电压"],
+        电表: ["精度等级", "额定电流", "接线方式"],
+        充电桩: ["枪口数量", "最大输出功率", "支付方式"],
+        BMS: ["电池簇数", "采样精度", "通讯协议"]
+      };
+      return map[type] || ["主数据项 1", "主数据项 2"];
+    }
+
+    function renderDynamicFields(title, fields) {
+      return `
+        <div style="margin-top: 24px;">
+          <h4 class="section-title">${title}</h4>
+          <div class="form-grid">
+            ${fields.map((field) => `
+              <div class="field">
+                <label>${field}</label>
+                <input type="text" placeholder="自动加载字段：${field}" />
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderModalContent(type) {
+      if (type === "brand") {
+        return {
+          title: "新增品牌厂商",
+          subtitle: "字段来源于 add.md，可用于弹窗结构展示。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>厂商品牌名称 *</label>
+                <input type="text" placeholder="请输入厂商品牌名称" />
+              </div>
+              <div class="field">
+                <label>模型编号 *</label>
+                <input type="text" placeholder="请输入模型编号" />
+              </div>
+              <div class="field">
+                <label>英文名称 *</label>
+                <input type="text" placeholder="请输入英文名称" />
+              </div>
+              <div class="field span-2">
+                <label>备注</label>
+                <textarea placeholder="请输入备注"></textarea>
+              </div>
+            </div>
+          `
+        };
+      }
+
+      if (type === "station-type") {
+        return {
+          title: "新增场站类型",
+          subtitle: "用于定义场站模板主数据结构。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>场站名称</label>
+                <input type="text" placeholder="请输入场站名称" />
+              </div>
+              <div class="field">
+                <label>英文名称</label>
+                <input type="text" placeholder="请输入英文名称" />
+              </div>
+              <div class="field">
+                <label>模型编码</label>
+                <input type="text" placeholder="请输入模型编码" />
+              </div>
+              <div class="field">
+                <label>所属类型</label>
+                <select>
+                  <option>发电类</option>
+                  <option>储能类</option>
+                  <option>用电类</option>
+                </select>
+              </div>
+            </div>
+          `
+        };
+      }
+
+      if (type === "station-main-data") {
+        return {
+          title: "新增场站主数据",
+          subtitle: "挂载到当前选中的场站类型模板下。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>主数据名称 *</label>
+                <input type="text" placeholder="请输入主数据名称" />
+              </div>
+              <div class="field">
+                <label>英文名称 *</label>
+                <input type="text" placeholder="请输入英文名称" />
+              </div>
+              <div class="field">
+                <label>主数据编码 *</label>
+                <input type="text" placeholder="请输入主数据编码" />
+              </div>
+              <div class="field">
+                <label>是否必填 *</label>
+                <select>
+                  <option>必填</option>
+                  <option>选填</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>录入类型 *</label>
+                <select>
+                  <option>文本</option>
+                  <option>数值</option>
+                  <option>下拉</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>主数据排序 *</label>
+                <input type="number" placeholder="请输入排序" />
+              </div>
+            </div>
+          `
+        };
+      }
+
+      if (type === "station") {
+        const selectedType = state.filters.stationManagement.type || "储能类/工商储能";
+        return {
+          title: "新增场站",
+          subtitle: "地址支持地图点选映射经纬度，主数据区随场站类型变化。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>场站名称 *</label>
+                <input type="text" placeholder="请输入场站名称" />
+              </div>
+              <div class="field">
+                <label>系统编号 *</label>
+                <input type="text" placeholder="请输入系统编号" />
+              </div>
+              <div class="field">
+                <label>场站类型 *</label>
+                <select id="station-type-select">
+                  ${stationTypeOptions.map((item) => `
+                    <option value="${item}" ${item === selectedType ? "selected" : ""}>${item}</option>
+                  `).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>运维负责人姓名 *</label>
+                <input type="text" placeholder="请输入负责人姓名" />
+              </div>
+              <div class="field">
+                <label>联系电话 *</label>
+                <input type="text" placeholder="请输入联系电话" />
+              </div>
+              <div class="field span-2">
+                <label>地址 *</label>
+                <input type="text" placeholder="省市（县）区 - 街道 - 详细地址" />
+              </div>
+              <div class="field span-2">
+                <label>地图定位</label>
+                <div class="hint-box" style="margin-top: 0;">
+                  地图加载后点选位置，此处映射经纬度坐标。示意坐标：120.7254, 31.3297
+                </div>
+              </div>
+            </div>
+            <div id="station-main-data-fields">
+              ${renderDynamicFields("主数据区", getStationMainDataFields(selectedType))}
+            </div>
+          `
+        };
+      }
+
+      if (type === "device") {
+        const selectedDeviceType = state.filters.deviceManagement.type || "PCS";
+        return {
+          title: "新增设备",
+          subtitle: "主数据区根据设备类型自动加载字段。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>设备名称 *</label>
+                <input type="text" placeholder="请输入设备名称" />
+              </div>
+              <div class="field">
+                <label>设备编码 *</label>
+                <input type="text" placeholder="请输入设备编码" />
+              </div>
+              <div class="field">
+                <label>设备类型 *</label>
+                <select id="device-type-select">
+                  ${deviceTypes.map((item) => `
+                    <option value="${item}" ${item === selectedDeviceType ? "selected" : ""}>${item}</option>
+                  `).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>所属场站 *</label>
+                <select>
+                  ${dataStore.stations.map((item) => `<option>${item.name}</option>`).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>品牌厂商</label>
+                <select>
+                  <option value="">请选择品牌厂商</option>
+                  ${dataStore.brands.map((item) => `<option>${item.name}</option>`).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label>型号</label>
+                <input type="text" placeholder="请输入设备型号" />
+              </div>
+            </div>
+            <div id="device-main-data-fields">
+              ${renderDynamicFields("主数据区", getDeviceMainDataFields(selectedDeviceType))}
+            </div>
+          `
+        };
+      }
+
+      return { title: "提示", subtitle: "", body: "<div class='empty'>暂无内容</div>" };
+    }
+
+    function openModal(type) {
+      state.modal = type;
+      const modal = renderModalContent(type);
+      modalTitle.textContent = modal.title;
+      modalSubtitle.textContent = modal.subtitle;
+      modalBody.innerHTML = modal.body;
+      modalMask.classList.add("show");
+      modalMask.setAttribute("aria-hidden", "false");
+      attachModalDynamicEvents();
+    }
+
+    function closeModal() {
+      state.modal = null;
+      modalMask.classList.remove("show");
+      modalMask.setAttribute("aria-hidden", "true");
+      modalBody.innerHTML = "";
+    }
+
+    function attachModalDynamicEvents() {
+      const stationTypeSelect = document.getElementById("station-type-select");
+      if (stationTypeSelect) {
+        stationTypeSelect.addEventListener("change", (event) => {
+          const target = document.getElementById("station-main-data-fields");
+          target.innerHTML = renderDynamicFields("主数据区", getStationMainDataFields(event.target.value));
+        });
+      }
+
+      const deviceTypeSelect = document.getElementById("device-type-select");
+      if (deviceTypeSelect) {
+        deviceTypeSelect.addEventListener("change", (event) => {
+          const target = document.getElementById("device-main-data-fields");
+          target.innerHTML = renderDynamicFields("主数据区", getDeviceMainDataFields(event.target.value));
+        });
+      }
+    }
+
+    function showToast(message) {
+      window.alert(message);
+    }
+
+    function resetFilters(view) {
+      if (view === "brands") state.filters.brands = { keyword: "" };
+      if (view === "stationModels") {
+        state.filters.stationModels = { name: "", category: "" };
+        state.stationModelPage = 1;
+      }
+      if (view === "stationManagement") state.filters.stationManagement = { name: "", type: "", topology: "" };
+      if (view === "deviceManagement") state.filters.deviceManagement = { name: "", type: "", code: "", station: "", brand: "" };
+      render();
+    }
+
+    function renderCurrentView() {
+      if (state.currentView === "device-types") return renderDeviceTypes();
+      if (state.currentView === "brands") return renderBrands();
+      if (state.currentView === "station-models") return renderStationModels();
+      if (state.currentView === "point-management") return renderBlankView("点位管理");
+      if (state.currentView === "space-models") return renderBlankView("空间模型");
+      if (state.currentView === "station-management") return renderStationManagement();
+      return renderDeviceManagement();
+    }
+
+    function render() {
+      renderNav();
+      renderTopbar();
+      app.innerHTML = renderCurrentView();
+    }
+
+    document.addEventListener("click", (event) => {
+      const navButton = event.target.closest("[data-nav]");
+      if (navButton) {
+        state.currentView = navButton.dataset.nav;
+        render();
+        return;
+      }
+
+      const actionButton = event.target.closest("[data-action]");
+      if (!actionButton) return;
+
+      const { action } = actionButton.dataset;
+
+      if (action === "open-modal") {
+        openModal(actionButton.dataset.modal);
+        return;
+      }
+
+      if (action === "reset-filters") {
+        resetFilters(actionButton.dataset.view);
+        return;
+      }
+
+      if (action === "select-station-model") {
+        state.selectedStationModelId = Number(actionButton.dataset.id);
+        render();
+        return;
+      }
+
+      if (action === "switch-station-model-page") {
+        state.stationModelPage = Number(actionButton.dataset.page);
+        render();
+        return;
+      }
+
+      if (action === "select-device-type") {
+        state.selectedDeviceTypeId = Number(actionButton.dataset.id);
+        render();
+        return;
+      }
+
+      if (action === "switch-device-type-tab") {
+        state.deviceTypeTab = actionButton.dataset.tab;
+        render();
+        return;
+      }
+
+      if (action === "toast") {
+        showToast(actionButton.dataset.message);
+        return;
+      }
+
+      if (action === "search") {
+        render();
+        showToast("已按当前条件筛选列表");
+      }
+    });
+
+    document.addEventListener("input", (event) => {
+      const target = event.target;
+      const view = target.dataset.filterView;
+      const key = target.dataset.filterKey;
+      if (!view || !key) return;
+      state.filters[view][key] = target.value;
+      if (view === "stationModels") state.stationModelPage = 1;
+    });
+
+    document.addEventListener("change", (event) => {
+      const target = event.target;
+      const view = target.dataset.filterView;
+      const key = target.dataset.filterKey;
+      if (!view || !key) return;
+      state.filters[view][key] = target.value;
+      if (view === "stationModels") state.stationModelPage = 1;
+    });
+
+    modalClose.addEventListener("click", closeModal);
+    modalCancel.addEventListener("click", closeModal);
+    modalSave.addEventListener("click", () => {
+      showToast("已模拟提交，原型不落真实数据");
+      closeModal();
+    });
+    modalMask.addEventListener("click", (event) => {
+      if (event.target === modalMask) closeModal();
+    });
+
+    render();
+  </script>
+</body>
+</html>
