@@ -473,6 +473,13 @@
       box-shadow: none;
     }
 
+    .btn-danger-soft {
+      background: rgba(245, 34, 45, 0.08);
+      color: var(--danger);
+      border-color: rgba(245, 34, 45, 0.12);
+      box-shadow: none;
+    }
+
     .btn-link {
       background: transparent;
       border: 0;
@@ -516,6 +523,44 @@
     .station-table th,
     .station-table td {
       white-space: nowrap;
+    }
+
+    .space-model-table {
+      min-width: 1460px;
+    }
+
+    .space-model-table th,
+    .space-model-table td {
+      white-space: nowrap;
+    }
+
+    .point-table {
+      min-width: 1600px;
+    }
+
+    .point-table th,
+    .point-table td {
+      white-space: nowrap;
+    }
+
+    .cell-ellipsis {
+      display: block;
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .checkbox-cell {
+      width: 52px;
+      text-align: center;
+    }
+
+    .checkbox-cell input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
     }
 
     .topology-page {
@@ -1284,8 +1329,8 @@
           { id: "device-types", label: "设备类型", desc: "设备类型主数据维护，当前为预留空白页" },
           { id: "brands", label: "品牌厂商", desc: "管理设备厂商与品牌信息" },
           { id: "station-models", label: "场站模型", desc: "维护场站类型模板与主数据配置" },
-          { id: "point-management", label: "点位管理", desc: "点位管理页面预留，当前为预留空白页" },
-          { id: "space-models", label: "空间模型", desc: "空间模型页面预留，当前为预留空白页" }
+          { id: "point-management", label: "点位管理", desc: "维护点位字典，支持查询、新增、批量导入导出与编辑" },
+          { id: "space-models", label: "空间模型", desc: "维护空间模型定义，支持查询、新增、编辑与查看点位" }
         ]
       },
       {
@@ -1336,6 +1381,71 @@
         { id: 304, name: "公共设施负荷", englishName: "Public Facility Load", code: "LOAD-PUB-001", category: "用电类" },
         { id: 305, name: "其他", englishName: "Other Load", code: "LOAD-OTH-001", category: "用电类" }
       ],
+      spaceModels: (() => {
+        const base = [
+          { id: 1, name: "电柜", englishName: "cabinet", code: "a_123", relationType: "设备", childModels: "储能-PCS", status: "启用" },
+          { id: 2, name: "微网-储能并网", englishName: "MICROGRID_es_grid", code: "MICROGRID_ES_GRID", relationType: "设备", childModels: "微网-储能柜", status: "启用" },
+          { id: 3, name: "微网-充电枪", englishName: "MICROGRID_charge_gun", code: "MICROGRID_CHARGE_GUN", relationType: "设备", childModels: "--", status: "启用" },
+          { id: 4, name: "微网-充电桩", englishName: "MICROGRID_charge_pile", code: "MICROGRID_CHARGE_PILE", relationType: "设备", childModels: "微网-充电枪", status: "启用" },
+          { id: 5, name: "微网-光伏并网", englishName: "MICROGRID_grid_connection", code: "MICROGRID_GRID_CONNECTION", relationType: "设备", childModels: "微网-逆变器", status: "启用" },
+          { id: 6, name: "微网-关口", englishName: "MICROGRID_gateway", code: "MICROGRID_GATEWAY", relationType: "设备", childModels: "微网-储能并网;微网-充电桩;微网-光伏并网", status: "启用" },
+          { id: 7, name: "微网-逆变器", englishName: "MICROGRID_inverter", code: "MICROGRID_INVERTER", relationType: "设备", childModels: "--", status: "启用" },
+          { id: 8, name: "微网-负载", englishName: "MICROGRID_load", code: "MICROGRID_LOAD", relationType: "设备", childModels: "--", status: "启用" },
+          { id: 9, name: "储能-并网", englishName: "ES_grid_connection", code: "ES_GRID_CONNECTION", relationType: "设备", childModels: "储能-储能柜", status: "启用" },
+          { id: 10, name: "储能-储能柜", englishName: "ES_cabinet", code: "ES_CABINET", relationType: "设备", childModels: "储能-PCS", status: "启用" }
+        ];
+        const extras = Array.from({ length: 35 }, (_, index) => {
+          const seq = index + 11;
+          return {
+            id: seq,
+            name: `空间模型-${seq}`,
+            englishName: `SPACE_MODEL_${seq}`,
+            code: `SPACE_MODEL_CODE_${seq}`,
+            relationType: "设备",
+            childModels: seq % 3 === 0 ? "--" : `子模型-${seq}-A;子模型-${seq}-B`,
+            status: seq % 8 === 0 ? "停用" : "启用"
+          };
+        });
+        return [...base, ...extras];
+      })(),
+      points: (() => {
+        const base = [
+          { id: 1, identifier: "powerconsumption", name: "用电量", englishName: "Power consumption", objectType: "ACC(累计量)", dataType: "float", unit: "kWh", unitEn: "kWh" },
+          { id: 2, identifier: "upwardreactivepower", name: "上行无功总电能", englishName: "Upward reactive power", objectType: "ACC(累计量)", dataType: "float", unit: "kvarh", unitEn: "kvarh" },
+          { id: 3, identifier: "totaldownstreamreactivepower", name: "下行无功总电能", englishName: "Total downstream reactive power", objectType: "ACC(累计量)", dataType: "float", unit: "kvarh", unitEn: "kvarh" },
+          { id: 4, identifier: "u", name: "电压", englishName: "Voltage", objectType: "AI（瞬时值）", dataType: "float", unit: "V", unitEn: "V" },
+          { id: 5, identifier: "i", name: "电流", englishName: "Current", objectType: "AI（瞬时值）", dataType: "float", unit: "A", unitEn: "A" },
+          { id: 6, identifier: "ua", name: "A相电压", englishName: "Phase-A Voltage", objectType: "AI（瞬时值）", dataType: "float", unit: "V", unitEn: "V" },
+          { id: 7, identifier: "ub", name: "B相电压", englishName: "Phase-B Voltage", objectType: "AI（瞬时值）", dataType: "float", unit: "V", unitEn: "V" },
+          { id: 8, identifier: "uc", name: "C相电压", englishName: "Phase-C Voltage", objectType: "AI（瞬时值）", dataType: "float", unit: "V", unitEn: "V" },
+          { id: 9, identifier: "ia", name: "A相电流", englishName: "Phase-A Current", objectType: "AI（瞬时值）", dataType: "float", unit: "A", unitEn: "A" },
+          { id: 10, identifier: "ib", name: "B相电流", englishName: "Phase-B Current", objectType: "AI（瞬时值）", dataType: "float", unit: "A", unitEn: "A" }
+        ];
+        const objectTypes = ["AI（瞬时值）", "ACC(累计量)", "DI（状态量）", "DO（控制量）"];
+        const dataTypes = ["float", "int", "bool", "string"];
+        const units = [
+          { unit: "V", unitEn: "V" },
+          { unit: "A", unitEn: "A" },
+          { unit: "kW", unitEn: "kW" },
+          { unit: "kWh", unitEn: "kWh" },
+          { unit: "%", unitEn: "%" }
+        ];
+        const extras = Array.from({ length: 133 }, (_, index) => {
+          const seq = index + 11;
+          const unitPair = units[index % units.length];
+          return {
+            id: seq,
+            identifier: `point_${seq}`,
+            name: `点位-${seq}`,
+            englishName: `Point-${seq}`,
+            objectType: objectTypes[index % objectTypes.length],
+            dataType: dataTypes[index % dataTypes.length],
+            unit: unitPair.unit,
+            unitEn: unitPair.unitEn
+          };
+        });
+        return [...base, ...extras];
+      })(),
       deviceTypeCatalog: [
         { id: 1, name: "户外一体柜", englishName: "outdoor cabinet", code: "a_123", parentType: "--" },
         { id: 2, name: "空调", englishName: "air-conditioner", code: "air_2", parentType: "--" },
@@ -1749,12 +1859,17 @@
       selectedTopologyStationId: 202,
       topologyDrawer: null,
       stationModelPage: 1,
+      pointManagementPage: 1,
+      spaceModelPage: 1,
       filters: {
         brands: { keyword: "" },
         stationModels: { name: "", category: "" },
+        pointManagement: { name: "", englishName: "", identifier: "", identifierMode: "模糊查询", objectType: "", dataType: "" },
+        spaceModels: { name: "" },
         stationManagement: { name: "", type: "", topology: "" },
         deviceManagement: { name: "", type: "", sn: "", station: "" }
       },
+      selectedPointIds: [],
       modal: null
     };
 
@@ -2069,6 +2184,283 @@
             <div class="card-body">
               <div class="empty" style="padding: 96px 18px;">
                 ${title} 页面暂未设计，当前保留为空白界面。
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderPointManagement() {
+      const filters = state.filters.pointManagement;
+      const pageSize = 10;
+      const rows = dataStore.points.filter((item) => {
+        const matchName = !filters.name || item.name.includes(filters.name);
+        const matchEnglishName = !filters.englishName || item.englishName.toLowerCase().includes(filters.englishName.toLowerCase());
+        const matchIdentifier = !filters.identifier || (
+          filters.identifierMode === "精确查询"
+            ? item.identifier === filters.identifier
+            : item.identifier.toLowerCase().includes(filters.identifier.toLowerCase())
+        );
+        const matchObjectType = !filters.objectType || item.objectType === filters.objectType;
+        const matchDataType = !filters.dataType || item.dataType === filters.dataType;
+        return matchName && matchEnglishName && matchIdentifier && matchObjectType && matchDataType;
+      });
+      const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+      const currentPage = Math.min(state.pointManagementPage, totalPages);
+      const pagedRows = rows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+      const currentPageIds = pagedRows.map((item) => item.id);
+      const allSelectedOnPage = currentPageIds.length > 0 && currentPageIds.every((id) => state.selectedPointIds.includes(id));
+
+      return `
+        <div class="page-layout">
+          ${renderSearchCard(
+            `
+              <div class="field">
+                <label>点位名称</label>
+                <input type="text" data-filter-view="pointManagement" data-filter-key="name" placeholder="请输入点位名称" value="${escapeHtml(filters.name)}" />
+              </div>
+              <div class="field">
+                <label>英文名称</label>
+                <input type="text" data-filter-view="pointManagement" data-filter-key="englishName" placeholder="请输入英文名称" value="${escapeHtml(filters.englishName)}" />
+              </div>
+              <div class="field">
+                <label>标识符</label>
+                <input type="text" data-filter-view="pointManagement" data-filter-key="identifier" placeholder="请输入标识符" value="${escapeHtml(filters.identifier)}" />
+              </div>
+              <div class="field">
+                <label>查询方式</label>
+                <select data-filter-view="pointManagement" data-filter-key="identifierMode">
+                  <option value="模糊查询" ${filters.identifierMode === "模糊查询" ? "selected" : ""}>模糊查询</option>
+                  <option value="精确查询" ${filters.identifierMode === "精确查询" ? "selected" : ""}>精确查询</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>对象类型</label>
+                <select data-filter-view="pointManagement" data-filter-key="objectType">
+                  <option value="">全部类型</option>
+                  <option value="AI（瞬时值）" ${filters.objectType === "AI（瞬时值）" ? "selected" : ""}>AI（瞬时值）</option>
+                  <option value="ACC(累计量)" ${filters.objectType === "ACC(累计量)" ? "selected" : ""}>ACC(累计量)</option>
+                  <option value="DI（状态量）" ${filters.objectType === "DI（状态量）" ? "selected" : ""}>DI（状态量）</option>
+                  <option value="DO（控制量）" ${filters.objectType === "DO（控制量）" ? "selected" : ""}>DO（控制量）</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>数据类型</label>
+                <select data-filter-view="pointManagement" data-filter-key="dataType">
+                  <option value="">全部类型</option>
+                  <option value="float" ${filters.dataType === "float" ? "selected" : ""}>float</option>
+                  <option value="int" ${filters.dataType === "int" ? "selected" : ""}>int</option>
+                  <option value="bool" ${filters.dataType === "bool" ? "selected" : ""}>bool</option>
+                  <option value="string" ${filters.dataType === "string" ? "selected" : ""}>string</option>
+                </select>
+              </div>
+            `,
+            `
+              <button class="btn btn-primary" type="button" data-action="search">搜索</button>
+              <button class="btn btn-default" type="button" data-action="reset-filters" data-view="pointManagement">重置</button>
+            `,
+            { compact: true }
+          )}
+          <section class="card">
+            <div class="card-header list-header">
+              <div class="card-title">
+                <h3>列表区</h3>
+                <p>点位管理支持新增、删除、批量导入导出，分页保持 10 条/页。</p>
+              </div>
+              <div class="list-toolbar">
+                <div class="list-actions">
+                  <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="point">新增点位</button>
+                  <button class="btn btn-danger-soft" type="button" data-action="delete-selected-points">删除</button>
+                </div>
+                <div class="list-actions right">
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="已模拟批量导入点位">批量导入</button>
+                  <button class="btn btn-secondary" type="button" data-action="toast" data-message="已模拟批量导出点位">批量导出</button>
+                </div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="point-table">
+                <thead>
+                  <tr>
+                    <th class="checkbox-cell">
+                      <input type="checkbox" data-action="toggle-point-select-all" data-ids="${currentPageIds.join(",")}" ${allSelectedOnPage ? "checked" : ""} />
+                    </th>
+                    <th>标识符</th>
+                    <th>点位名称</th>
+                    <th>英文名称</th>
+                    <th>对象类型</th>
+                    <th>数据类型</th>
+                    <th>单位</th>
+                    <th>单位(英文)</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${pagedRows.length ? pagedRows.map((item) => `
+                    <tr>
+                      <td class="checkbox-cell">
+                        <input type="checkbox" data-action="toggle-point-select" data-id="${item.id}" ${state.selectedPointIds.includes(item.id) ? "checked" : ""} />
+                      </td>
+                      <td><span class="cell-ellipsis" title="${escapeHtml(item.identifier)}">${item.identifier}</span></td>
+                      <td><div class="cell-title">${item.name}</div></td>
+                      <td><span class="cell-ellipsis" title="${escapeHtml(item.englishName)}">${item.englishName}</span></td>
+                      <td>${item.objectType}</td>
+                      <td>${item.dataType}</td>
+                      <td>${item.unit}</td>
+                      <td>${item.unitEn}</td>
+                      <td>
+                        <div class="table-actions">
+                          <button
+                            class="btn-link"
+                            type="button"
+                            data-action="open-modal"
+                            data-modal="point"
+                            data-modal-mode="view"
+                            data-identifier="${escapeHtml(item.identifier)}"
+                            data-name="${escapeHtml(item.name)}"
+                            data-english-name="${escapeHtml(item.englishName)}"
+                            data-object-type="${escapeHtml(item.objectType)}"
+                            data-data-type="${escapeHtml(item.dataType)}"
+                            data-unit="${escapeHtml(item.unit)}"
+                            data-unit-en="${escapeHtml(item.unitEn)}"
+                          >查看</button>
+                          <button
+                            class="btn-link"
+                            type="button"
+                            data-action="open-modal"
+                            data-modal="point"
+                            data-modal-mode="edit"
+                            data-identifier="${escapeHtml(item.identifier)}"
+                            data-name="${escapeHtml(item.name)}"
+                            data-english-name="${escapeHtml(item.englishName)}"
+                            data-object-type="${escapeHtml(item.objectType)}"
+                            data-data-type="${escapeHtml(item.dataType)}"
+                            data-unit="${escapeHtml(item.unit)}"
+                            data-unit-en="${escapeHtml(item.unitEn)}"
+                          >编辑</button>
+                          <button class="btn-link" type="button" data-action="toast" data-message="已模拟删除点位 ${item.name}">删除</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("") : `
+                    <tr><td colspan="9"><div class="empty">没有匹配的点位数据</div></td></tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span>共 ${rows.length} 条</span>
+              <div class="pagination">
+                ${Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `
+                  <button class="page-pill ${page === currentPage ? "active" : ""}" type="button" data-action="switch-point-management-page" data-page="${page}">
+                    ${page}
+                  </button>
+                `).join("")}
+                <span class="page-pill">${pageSize} 条/页</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function renderSpaceModels() {
+      const filters = state.filters.spaceModels;
+      const pageSize = 10;
+      const rows = dataStore.spaceModels.filter((item) => {
+        const keyword = filters.name.trim();
+        return !keyword || [item.name, item.englishName, item.code].some((value) => value.includes(keyword));
+      });
+      const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+      const currentPage = Math.min(state.spaceModelPage, totalPages);
+      const pagedRows = rows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+      return `
+        <div class="page-layout">
+          ${renderSearchCard(
+            `
+              <div class="field">
+                <label>模型名称</label>
+                <input type="text" data-filter-view="spaceModels" data-filter-key="name" placeholder="请输入模型名称" value="${escapeHtml(filters.name)}" />
+              </div>
+            `,
+            `
+              <button class="btn btn-primary" type="button" data-action="search">查询</button>
+              <button class="btn btn-default" type="button" data-action="reset-filters" data-view="spaceModels">重置</button>
+            `,
+            { compact: true }
+          )}
+          <section class="card">
+            <div class="card-header list-header">
+              <div class="card-title">
+                <h3>列表区</h3>
+                <p>空间模型列表支持新增、编辑与查看点位，分页保持 10 条/页。</p>
+              </div>
+              <div class="list-toolbar">
+                <div class="list-actions">
+                  <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="space-model">新增空间模型</button>
+                </div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="space-model-table">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>模型名称</th>
+                    <th>英文名称</th>
+                    <th>模型编码</th>
+                    <th>可关联类型</th>
+                    <th>下级模型</th>
+                    <th>模型状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${pagedRows.length ? pagedRows.map((item, index) => `
+                    <tr>
+                      <td>${(currentPage - 1) * pageSize + index + 1}</td>
+                      <td><div class="cell-title">${item.name}</div></td>
+                      <td><span class="cell-ellipsis" title="${escapeHtml(item.englishName)}">${item.englishName}</span></td>
+                      <td><span class="cell-ellipsis" title="${escapeHtml(item.code)}">${item.code}</span></td>
+                      <td>${item.relationType}</td>
+                      <td><span class="cell-ellipsis" title="${escapeHtml(item.childModels)}">${item.childModels}</span></td>
+                      <td><span class="${item.status === "启用" ? "tag tag-green" : "tag tag-orange"}">${item.status}</span></td>
+                      <td>
+                        <div class="table-actions">
+                          <button
+                            class="btn-link"
+                            type="button"
+                            data-action="open-modal"
+                            data-modal="space-model"
+                            data-modal-mode="edit"
+                            data-name="${escapeHtml(item.name)}"
+                            data-english-name="${escapeHtml(item.englishName)}"
+                            data-code="${escapeHtml(item.code)}"
+                            data-relation-type="${escapeHtml(item.relationType)}"
+                            data-child-models="${escapeHtml(item.childModels)}"
+                            data-status="${escapeHtml(item.status)}"
+                          >编辑</button>
+                          <button class="btn-link" type="button" data-action="toast" data-message="已模拟查看 ${item.name} 的点位">查看点位</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("") : `
+                    <tr><td colspan="8"><div class="empty">没有匹配的空间模型数据</div></td></tr>
+                  `}
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span>共 ${rows.length} 条</span>
+              <div class="pagination">
+                ${Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => `
+                  <button class="page-pill ${page === currentPage ? "active" : ""}" type="button" data-action="switch-space-model-page" data-page="${page}">
+                    ${page}
+                  </button>
+                `).join("")}
+                <span class="page-pill">${pageSize} 条/页</span>
               </div>
             </div>
           </section>
@@ -2880,6 +3272,107 @@
         };
       }
 
+      if (type === "space-model") {
+        const isEdit = payload.modalMode === "edit";
+        return {
+          title: isEdit ? "编辑空间模型" : "新增空间模型",
+          subtitle: isEdit ? `${payload.name || "当前空间模型"} 的基础信息维护。` : "用于定义空间模型结构与可关联对象。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>模型名称 *</label>
+                <input type="text" placeholder="请输入模型名称" value="${escapeHtml(payload.name || "")}" />
+              </div>
+              <div class="field">
+                <label>英文名称 *</label>
+                <input type="text" placeholder="请输入英文名称" value="${escapeHtml(payload.englishName || "")}" />
+              </div>
+              <div class="field">
+                <label>模型编码 *</label>
+                <input type="text" placeholder="请输入模型编码" value="${escapeHtml(payload.code || "")}" />
+              </div>
+              <div class="field">
+                <label>可关联类型 *</label>
+                <select>
+                  <option ${!payload.relationType || payload.relationType === "设备" ? "selected" : ""}>设备</option>
+                  <option ${payload.relationType === "场站" ? "selected" : ""}>场站</option>
+                  <option ${payload.relationType === "空间" ? "selected" : ""}>空间</option>
+                </select>
+              </div>
+              <div class="field span-2">
+                <label>下级模型</label>
+                <input type="text" placeholder="请输入下级模型，多个可用分号分隔" value="${escapeHtml(payload.childModels === "--" ? "" : (payload.childModels || ""))}" />
+              </div>
+              <div class="field">
+                <label>模型状态 *</label>
+                <select>
+                  <option ${!payload.status || payload.status === "启用" ? "selected" : ""}>启用</option>
+                  <option ${payload.status === "停用" ? "selected" : ""}>停用</option>
+                </select>
+              </div>
+            </div>
+          `
+        };
+      }
+
+      if (type === "point") {
+        const mode = payload.modalMode || "create";
+        const isView = mode === "view";
+        const isEdit = mode === "edit";
+        const readonlyAttr = isView ? 'readonly style="background: #f5f7fb; color: var(--muted); cursor: not-allowed;"' : "";
+        const disabledAttr = isView ? "disabled" : "";
+        return {
+          title: isView ? "查看点位" : (isEdit ? "编辑点位" : "新增点位"),
+          subtitle: isView ? `${payload.name || "当前点位"} 的详情只读展示。` : "维护点位基础信息与显示单位。",
+          body: `
+            <div class="form-grid">
+              <div class="field">
+                <label>标识符 *</label>
+                <input type="text" placeholder="请输入标识符" value="${escapeHtml(payload.identifier || "")}" ${readonlyAttr} />
+              </div>
+              <div class="field">
+                <label>点位名称 *</label>
+                <input type="text" placeholder="请输入点位名称" value="${escapeHtml(payload.name || "")}" ${readonlyAttr} />
+              </div>
+              <div class="field">
+                <label>英文名称 *</label>
+                <input type="text" placeholder="请输入英文名称" value="${escapeHtml(payload.englishName || "")}" ${readonlyAttr} />
+              </div>
+              <div class="field">
+                <label>对象类型 *</label>
+                <select ${disabledAttr}>
+                  <option ${!payload.objectType || payload.objectType === "AI（瞬时值）" ? "selected" : ""}>AI（瞬时值）</option>
+                  <option ${payload.objectType === "ACC(累计量)" ? "selected" : ""}>ACC(累计量)</option>
+                  <option ${payload.objectType === "DI（状态量）" ? "selected" : ""}>DI（状态量）</option>
+                  <option ${payload.objectType === "DO（控制量）" ? "selected" : ""}>DO（控制量）</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>数据类型 *</label>
+                <select ${disabledAttr}>
+                  <option ${!payload.dataType || payload.dataType === "float" ? "selected" : ""}>float</option>
+                  <option ${payload.dataType === "int" ? "selected" : ""}>int</option>
+                  <option ${payload.dataType === "bool" ? "selected" : ""}>bool</option>
+                  <option ${payload.dataType === "string" ? "selected" : ""}>string</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>单位</label>
+                <input type="text" placeholder="请输入单位" value="${escapeHtml(payload.unit || "")}" ${readonlyAttr} />
+              </div>
+              <div class="field">
+                <label>单位(英文)</label>
+                <input type="text" placeholder="请输入单位英文" value="${escapeHtml(payload.unitEn || "")}" ${readonlyAttr} />
+              </div>
+              <div class="field span-2">
+                <label>备注</label>
+                <textarea placeholder="请输入备注" ${isView ? 'readonly style="background: #f5f7fb; color: var(--muted); cursor: not-allowed;"' : ""}></textarea>
+              </div>
+            </div>
+          `
+        };
+      }
+
       if (type === "station") {
         const selectedType = state.filters.stationManagement.type || "储能类/工商业储能";
         return {
@@ -2997,6 +3490,7 @@
       modalTitle.textContent = modal.title;
       modalSubtitle.textContent = modal.subtitle;
       modalBody.innerHTML = modal.body;
+      modalSave.textContent = payload.modalMode === "view" ? "关闭" : "确认";
       modalMask.classList.add("show");
       modalMask.setAttribute("aria-hidden", "false");
       attachModalDynamicEvents();
@@ -3037,6 +3531,14 @@
         state.filters.stationModels = { name: "", category: "" };
         state.stationModelPage = 1;
       }
+      if (view === "pointManagement") {
+        state.filters.pointManagement = { name: "", englishName: "", identifier: "", identifierMode: "模糊查询", objectType: "", dataType: "" };
+        state.pointManagementPage = 1;
+      }
+      if (view === "spaceModels") {
+        state.filters.spaceModels = { name: "" };
+        state.spaceModelPage = 1;
+      }
       if (view === "stationManagement") state.filters.stationManagement = { name: "", type: "", topology: "" };
       if (view === "deviceManagement") state.filters.deviceManagement = { name: "", type: "", sn: "", station: "" };
       render();
@@ -3046,8 +3548,8 @@
       if (state.currentView === "device-types") return renderDeviceTypes();
       if (state.currentView === "brands") return renderBrands();
       if (state.currentView === "station-models") return renderStationModels();
-      if (state.currentView === "point-management") return renderBlankView("点位管理");
-      if (state.currentView === "space-models") return renderBlankView("空间模型");
+      if (state.currentView === "point-management") return renderPointManagement();
+      if (state.currentView === "space-models") return renderSpaceModels();
       if (state.currentView === "station-management") return renderStationManagement();
       if (state.currentView === "topology-config") return renderTopologyConfig();
       return renderDeviceManagement();
@@ -3097,6 +3599,49 @@
       if (action === "switch-station-model-page") {
         state.stationModelPage = Number(actionButton.dataset.page);
         render();
+        return;
+      }
+
+      if (action === "switch-point-management-page") {
+        state.pointManagementPage = Number(actionButton.dataset.page);
+        render();
+        return;
+      }
+
+      if (action === "switch-space-model-page") {
+        state.spaceModelPage = Number(actionButton.dataset.page);
+        render();
+        return;
+      }
+
+      if (action === "toggle-point-select") {
+        const pointId = Number(actionButton.dataset.id);
+        if (actionButton.checked) {
+          state.selectedPointIds = Array.from(new Set([...state.selectedPointIds, pointId]));
+        } else {
+          state.selectedPointIds = state.selectedPointIds.filter((id) => id !== pointId);
+        }
+        render();
+        return;
+      }
+
+      if (action === "toggle-point-select-all") {
+        const ids = (actionButton.dataset.ids || "").split(",").filter(Boolean).map(Number);
+        if (actionButton.checked) {
+          state.selectedPointIds = Array.from(new Set([...state.selectedPointIds, ...ids]));
+        } else {
+          state.selectedPointIds = state.selectedPointIds.filter((id) => !ids.includes(id));
+        }
+        render();
+        return;
+      }
+
+      if (action === "delete-selected-points") {
+        if (!state.selectedPointIds.length) {
+          showToast("请先勾选需要删除的点位");
+          return;
+        }
+        showToast(`已模拟批量删除 ${state.selectedPointIds.length} 个点位`);
         return;
       }
 
@@ -3161,6 +3706,7 @@
       if (action === "search") {
         render();
         showToast("已按当前条件筛选列表");
+        return;
       }
     });
 
@@ -3171,6 +3717,8 @@
       if (!view || !key) return;
       state.filters[view][key] = target.value;
       if (view === "stationModels") state.stationModelPage = 1;
+      if (view === "pointManagement") state.pointManagementPage = 1;
+      if (view === "spaceModels") state.spaceModelPage = 1;
     });
 
     document.addEventListener("change", (event) => {
@@ -3180,11 +3728,17 @@
       if (!view || !key) return;
       state.filters[view][key] = target.value;
       if (view === "stationModels") state.stationModelPage = 1;
+      if (view === "pointManagement") state.pointManagementPage = 1;
+      if (view === "spaceModels") state.spaceModelPage = 1;
     });
 
     modalClose.addEventListener("click", closeModal);
     modalCancel.addEventListener("click", closeModal);
     modalSave.addEventListener("click", () => {
+      if (state.modal && state.modal.payload && state.modal.payload.modalMode === "view") {
+        closeModal();
+        return;
+      }
       showToast("已模拟提交，原型不落真实数据");
       closeModal();
     });
