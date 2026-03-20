@@ -1289,13 +1289,7 @@
           <h2 id="page-title">品牌厂商</h2>
           <p id="page-desc">管理设备厂商与品牌信息，支持查询、新增与编辑展示。</p>
         </div>
-        <div class="status-card">
-          <div class="status-dot"></div>
-          <div>
-            <strong>原型就绪</strong>
-            <div style="color: var(--muted); font-size: 13px; margin-top: 4px;">可直接双击本文件或通过本地服务展示</div>
-          </div>
-        </div>
+        
       </div>
       <div id="app"></div>
     </main>
@@ -1988,8 +1982,8 @@
           <section class="card">
             <div class="card-header">
               <div class="card-title">
-                <h3>列表区</h3>
-                <p>品牌厂商维护列表，最右侧为操作区。</p>
+                <h3>品牌厂商列表</h3>
+              
               </div>
               <div class="list-actions">
                 <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="brand">新增品牌厂商</button>
@@ -2264,10 +2258,7 @@
           )}
           <section class="card">
             <div class="card-header list-header">
-              <div class="card-title">
-                <h3>列表区</h3>
-                <p>点位管理支持新增、删除、批量导入导出，分页保持 10 条/页。</p>
-              </div>
+             
               <div class="list-toolbar">
                 <div class="list-actions">
                   <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="point">新增点位</button>
@@ -2393,10 +2384,7 @@
           )}
           <section class="card">
             <div class="card-header list-header">
-              <div class="card-title">
-                <h3>列表区</h3>
-                <p>空间模型列表支持新增、编辑与查看点位，分页保持 10 条/页。</p>
-              </div>
+             
               <div class="list-toolbar">
                 <div class="list-actions">
                   <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="space-model">新增空间模型</button>
@@ -2512,7 +2500,7 @@
                 <div class="device-toolbar">
                   <div class="card-title">
                     <h3>场站类型列表</h3>
-                    <p>点击左侧行，右侧展示对应主数据配置。</p>
+                    
                   </div>
                   <div class="device-toolbar-actions">
                     <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station-type">新增场站类型</button>
@@ -2566,20 +2554,14 @@
               <div class="device-pane">
                 <div class="device-toolbar">
                   <div class="card-title">
-                    <h3>主数据列表区</h3>
+                    <h3>主数据列表</h3>
                     <p>${selected ? `${selected.name} 的主数据配置` : "请选择左侧场站类型"}</p>
                   </div>
                   <div class="device-toolbar-actions">
                     <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station-main-data">新增主数据</button>
                   </div>
                 </div>
-                ${selected ? `
-                  <div class="chip-row" style="margin-bottom: 18px;">
-                    <span class="chip active">${selected.name}</span>
-                    <span class="chip">${selected.code}</span>
-                    <span class="chip">${selected.category}</span>
-                  </div>
-                ` : ""}
+               
                 <div class="table-wrap">
                   <table>
                     <thead>
@@ -2680,10 +2662,7 @@
           )}
           <section class="card">
             <div class="card-header list-header">
-              <div class="card-title">
-                <h3>列表区</h3>
-                <p>场站管理列表，操作支持拓扑配置、编辑及更多动作展示。</p>
-              </div>
+             
               <div class="list-toolbar">
                 <div class="list-actions">
                   <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="station">新增场站</button>
@@ -2699,6 +2678,7 @@
               <table class="station-table">
                 <thead>
                   <tr>
+                    
                     <th>场站名称</th>
                     <th>场站类型</th>
                     <th>并网日期</th>
@@ -2787,10 +2767,7 @@
           )}
           <section class="card">
             <div class="card-header list-header">
-              <div class="card-title">
-                <h3>列表区</h3>
-                <p>设备实例管理列表，支持新增设备与基础维护动作。</p>
-              </div>
+              
               <div class="list-toolbar">
                 <div class="list-actions">
                   <button class="btn btn-primary" type="button" data-action="open-modal" data-modal="device">新增设备</button>
@@ -3198,7 +3175,7 @@
           body: `
             <div class="form-grid">
               <div class="field">
-                <label>场站类型类型名称</label>
+                <label>场站类型名称</label>
                 <input type="text" placeholder="请输入场站类型名称" />
               </div>
               <div class="field">
