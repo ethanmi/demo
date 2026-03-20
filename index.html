@@ -1490,6 +1490,7 @@
           type: "储能类/工商业储能",
           gridDate: "2025-04-18",
           nature: "代运营",
+          operator: "苏州新能运营公司",
           owner: "刘昊-13810001122",
           topology: "已配置",
           address: "江苏省苏州市工业园区星湖街 88 号",
@@ -1501,6 +1502,7 @@
           type: "发电类/分布式光伏",
           gridDate: "2024-11-03",
           nature: "自持",
+          operator: "嘉兴秀洲新能源公司",
           owner: "王宁-13920001221",
           topology: "已配置",
           address: "浙江省嘉兴市秀洲区新塍大道 126 号",
@@ -1512,6 +1514,7 @@
           type: "用电类/充电站",
           gridDate: "2025-01-09",
           nature: "代运营",
+          operator: "临港智慧运营中心",
           owner: "周倩-13711119888",
           topology: "未配置",
           address: "上海市浦东新区临港新片区海港大道 501 号",
@@ -1523,6 +1526,7 @@
           type: "发电类/集中式光伏",
           gridDate: "2024-07-16",
           nature: "自持",
+          operator: "中卫清洁能源运营公司",
           owner: "陈澈-13610008961",
           topology: "已配置",
           address: "宁夏回族自治区中卫市沙坡头区光明大道 18 号",
@@ -1534,6 +1538,7 @@
           type: "发电类/工商业分布式光伏",
           gridDate: "2025-02-25",
           nature: "代运营",
+          operator: "园区综合能源运营中心",
           owner: "韩雪-13522006718",
           topology: "已配置",
           address: "江苏省苏州市工业园区金鸡湖大道 209 号",
@@ -1545,6 +1550,7 @@
           type: "储能类/独立储能",
           gridDate: "2025-06-12",
           nature: "自持",
+          operator: "盐城沿海储能运营公司",
           owner: "宋远-13700883321",
           topology: "已配置",
           address: "江苏省盐城市大丰区海港路 66 号",
@@ -1556,6 +1562,7 @@
           type: "储能类/工商业储能",
           gridDate: "2025-03-06",
           nature: "代运营",
+          operator: "无锡高新综合能源公司",
           owner: "沈茗-13900442217",
           topology: "已配置",
           address: "江苏省无锡市新吴区菱湖大道 188 号",
@@ -1567,6 +1574,7 @@
           type: "用电类/充电站",
           gridDate: "2025-08-20",
           nature: "自持",
+          operator: "前海出行能源运营公司",
           owner: "郭林-13800990012",
           topology: "已配置",
           address: "广东省深圳市南山区前海大道 1088 号",
@@ -2291,6 +2299,7 @@
                     <th>场站类型</th>
                     <th>并网日期</th>
                     <th>场站性质</th>
+                    <th>所属运营方</th>
                     <th>运维负责人-联系电话</th>
                     <th>拓扑状态</th>
                     <th>详细地址</th>
@@ -2307,6 +2316,7 @@
                       <td><span class="${tagClass(item.type)}">${item.type}</span></td>
                       <td>${item.gridDate}</td>
                       <td>${item.nature}</td>
+                      <td>${item.operator}</td>
                       <td>${item.owner}</td>
                       <td><span class="${tagClass(item.topology)}">${item.topology}</span></td>
                       <td>${item.address}</td>
@@ -2320,7 +2330,7 @@
                       </td>
                     </tr>
                   `).join("") : `
-                    <tr><td colspan="9"><div class="empty">没有匹配的场站数据</div></td></tr>
+                    <tr><td colspan="10"><div class="empty">没有匹配的场站数据</div></td></tr>
                   `}
                 </tbody>
               </table>
@@ -2358,8 +2368,8 @@
                 </select>
               </div>
               <div class="field">
-                <label>设备SN号</label>
-                <input type="text" data-filter-view="deviceManagement" data-filter-key="sn" placeholder="请输入设备SN号" value="${escapeHtml(filters.sn)}" />
+                <label>设备原厂SN号</label>
+                <input type="text" data-filter-view="deviceManagement" data-filter-key="sn" placeholder="请输入原厂" value="${escapeHtml(filters.sn)}" />
               </div>
               <div class="field">
                 <label>所属场站</label>
@@ -2393,7 +2403,7 @@
                 <thead>
                   <tr>
                     <th>设备名称</th>
-                    <th>设备SN号</th>
+                    <th>设备原厂SN号</th>
                     <th>设备类型</th>
                     <th>品牌厂商</th>
                     <th>所属场站</th>
@@ -2763,10 +2773,7 @@
                 <label>厂商品牌名称 *</label>
                 <input type="text" placeholder="请输入厂商品牌名称" />
               </div>
-              <div class="field">
-                <label>模型编号 *</label>
-                <input type="text" placeholder="请输入模型编号" />
-              </div>
+              
               <div class="field">
                 <label>英文名称 *</label>
                 <input type="text" placeholder="请输入英文名称" />
@@ -2787,17 +2794,14 @@
           body: `
             <div class="form-grid">
               <div class="field">
-                <label>场站名称</label>
-                <input type="text" placeholder="请输入场站名称" />
+                <label>场站类型类型名称</label>
+                <input type="text" placeholder="请输入场站类型名称" />
               </div>
               <div class="field">
                 <label>英文名称</label>
                 <input type="text" placeholder="请输入英文名称" />
               </div>
-              <div class="field">
-                <label>模型编码</label>
-                <input type="text" placeholder="请输入模型编码" />
-              </div>
+             
               <div class="field">
                 <label>所属分组</label>
                 <select>
@@ -2885,6 +2889,10 @@
                 </select>
               </div>
               <div class="field">
+                <label>所属运营方 *</label>
+                <input type="text" placeholder="请输入所属运营方" />
+              </div>
+              <div class="field">
                 <label>运维负责人姓名 *</label>
                 <input type="text" placeholder="请输入负责人姓名" />
               </div>
@@ -2922,8 +2930,8 @@
                 <input type="text" placeholder="请输入设备名称" />
               </div>
               <div class="field">
-                <label>设备SN号 *</label>
-                <input type="text" placeholder="请输入设备SN号" />
+                <label>设备原厂SN号 *</label>
+                <input type="text" placeholder="请输入设备原厂SN号" />
               </div>
               <div class="field">
                 <label>设备类型 *</label>
