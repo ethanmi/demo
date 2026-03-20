@@ -126,11 +126,47 @@
       transition: 160ms ease;
     }
 
+    .nav-item-parent {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .nav-item-label {
+      flex: 1;
+    }
+
+    .nav-item-arrow {
+      font-size: 12px;
+      color: rgba(238, 244, 255, 0.68);
+      transition: transform 160ms ease;
+    }
+
+    .nav-item.expanded .nav-item-arrow {
+      transform: rotate(90deg);
+      color: #fff;
+    }
+
     .nav-item:hover,
     .nav-item.active {
       background: linear-gradient(135deg, rgba(77, 164, 255, 0.24), rgba(125, 211, 252, 0.12));
       color: #fff;
       transform: translateX(2px);
+    }
+
+    .nav-sublist {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+      padding-left: 14px;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-subitem {
+      padding-left: 18px;
+      font-size: 14px;
     }
 
     .sidebar-note {
@@ -1330,8 +1366,15 @@
       {
         group: "业务平台",
         items: [
-          { id: "station-management", label: "场站管理", desc: "管理真实场站与拓扑状态" },
-          { id: "device-management", label: "设备管理", desc: "管理场站下的设备实例" }
+          {
+            id: "asset-management",
+            label: "资产管理",
+            desc: "统一查看场站与设备资产",
+            children: [
+              { id: "station-management", label: "场站管理", desc: "管理真实场站与拓扑状态" },
+              { id: "device-management", label: "设备管理", desc: "管理场站下的设备实例" }
+            ]
+          }
         ]
       }
     ];
@@ -1852,6 +1895,7 @@
       selectedStationModelId: 101,
       selectedTopologyStationId: 202,
       topologyDrawer: null,
+      expandedNav: {},
       stationModelPage: 1,
       pointManagementPage: 1,
       spaceModelPage: 1,
@@ -1894,14 +1938,42 @@
       return state.currentView;
     }
 
+    function flattenNavEntries(items) {
+      return items.flatMap((item) => [item, ...(item.children ? flattenNavEntries(item.children) : [])]);
+    }
+
     function renderNav() {
       const activeViewId = getActiveViewId();
       navRoot.innerHTML = navItems.map((group) => {
-        const itemsHtml = group.items.map((item) => `
-          <button class="nav-item ${activeViewId === item.id ? "active" : ""}" type="button" data-nav="${item.id}">
-            ${item.label}
-          </button>
-        `).join("");
+        const itemsHtml = group.items.map((item) => {
+          if (!item.children) {
+            return `
+              <button class="nav-item ${activeViewId === item.id ? "active" : ""}" type="button" data-nav="${item.id}">
+                ${item.label}
+              </button>
+            `;
+          }
+
+          const hasActiveChild = item.children.some((child) => child.id === activeViewId);
+          const expanded = state.expandedNav[item.id] ?? hasActiveChild;
+          const childItemsHtml = expanded ? `
+            <div class="nav-sublist">
+              ${item.children.map((child) => `
+                <button class="nav-item nav-subitem ${activeViewId === child.id ? "active" : ""}" type="button" data-nav="${child.id}">
+                  ${child.label}
+                </button>
+              `).join("")}
+            </div>
+          ` : "";
+
+          return `
+            <button class="nav-item nav-item-parent ${expanded ? "expanded" : ""} ${hasActiveChild ? "active" : ""}" type="button" data-nav-toggle="${item.id}">
+              <span class="nav-item-label">${item.label}</span>
+              <span class="nav-item-arrow">▶</span>
+            </button>
+            ${childItemsHtml}
+          `;
+        }).join("");
         return `
           <div class="nav-group">
             <div class="nav-group-title">${group.group}</div>
@@ -1917,7 +1989,7 @@
         return;
       }
       topbar.classList.remove("hidden");
-      const meta = navItems.flatMap((group) => group.items).find((item) => item.id === state.currentView);
+      const meta = navItems.flatMap((group) => flattenNavEntries(group.items)).find((item) => item.id === state.currentView);
       pageTitle.textContent = meta.label;
       pageDesc.textContent = meta.desc;
     }
@@ -3542,9 +3614,20 @@
     }
 
     document.addEventListener("click", (event) => {
+      const navToggleButton = event.target.closest("[data-nav-toggle]");
+      if (navToggleButton) {
+        const navId = navToggleButton.dataset.navToggle;
+        state.expandedNav[navId] = !state.expandedNav[navId];
+        renderNav();
+        return;
+      }
+
       const navButton = event.target.closest("[data-nav]");
       if (navButton) {
         state.currentView = navButton.dataset.nav;
+        if (navButton.dataset.nav === "station-management" || navButton.dataset.nav === "device-management") {
+          state.expandedNav["asset-management"] = true;
+        }
         render();
         return;
       }
