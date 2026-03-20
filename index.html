@@ -2212,7 +2212,19 @@
                           <td>${normalizeInputType(item.inputType)}</td>
                           <td>
                             <div class="table-actions">
-                              <button class="btn-link" type="button" data-action="open-modal" data-modal="station-main-data">编辑</button>
+                              <button
+                                class="btn-link"
+                                type="button"
+                                data-action="open-modal"
+                                data-modal="station-main-data"
+                                data-modal-mode="edit"
+                                data-name="${escapeHtml(item.name)}"
+                                data-english-name="${escapeHtml(item.englishName)}"
+                                data-code="${escapeHtml(item.code)}"
+                                data-required="${item.required}"
+                                data-input-type="${escapeHtml(normalizeInputType(item.inputType))}"
+                                data-order="${item.order}"
+                              >编辑</button>
                               <button class="btn-link" type="button" data-action="toast" data-message="已模拟删除 ${item.name}">删除</button>
                             </div>
                           </td>
@@ -2762,7 +2774,7 @@
       setTimeout(syncTopologyViewport, 0);
     }
 
-    function renderModalContent(type) {
+    function renderModalContent(type, payload = {}) {
       if (type === "brand") {
         return {
           title: "新增品牌厂商",
@@ -2816,42 +2828,52 @@
       }
 
       if (type === "station-main-data") {
+        const isEdit = payload.modalMode === "edit";
+        const selectedStationModel = dataStore.stationModels.find((item) => item.id === state.selectedStationModelId);
+        const currentInputType = payload.inputType || "文本";
         return {
-          title: "新增场站主数据",
-          subtitle: "挂载到当前选中的场站类型模板下。",
+          title: isEdit ? "编辑场站主数据" : "新增场站主数据",
+          subtitle: isEdit
+            ? `${selectedStationModel ? `${selectedStationModel.name} / ` : ""}${payload.name || "当前主数据"}，主数据编码不可修改。`
+            : "挂载到当前选中的场站类型模板下。",
           body: `
             <div class="form-grid">
               <div class="field">
                 <label>主数据名称 *</label>
-                <input type="text" placeholder="请输入主数据名称" />
+                <input type="text" placeholder="请输入主数据名称" value="${escapeHtml(payload.name || "")}" />
               </div>
               <div class="field">
                 <label>英文名称 *</label>
-                <input type="text" placeholder="请输入英文名称" />
+                <input type="text" placeholder="请输入英文名称" value="${escapeHtml(payload.englishName || "")}" />
               </div>
               <div class="field">
                 <label>主数据编码 *</label>
-                <input type="text" placeholder="请输入主数据编码" />
+                <input
+                  type="text"
+                  placeholder="请输入主数据编码"
+                  value="${escapeHtml(payload.code || "")}"
+                  ${isEdit ? 'readonly style="background: #f5f7fb; color: var(--muted); cursor: not-allowed;"' : ""}
+                />
               </div>
               <div class="field">
                 <label>是否必填 *</label>
                 <select>
-                  <option>必填</option>
-                  <option>选填</option>
+                  <option ${payload.required === "true" || payload.required === true ? "selected" : ""}>必填</option>
+                  <option ${(payload.required === "false" || payload.required === false) ? "selected" : ""}>选填</option>
                 </select>
               </div>
               <div class="field">
                 <label>录入类型 *</label>
                 <select>
-                  <option>文本</option>
-                  <option>数字</option>
-                  <option>下拉单选</option>
-                  <option>下拉多选</option>
+                  <option ${currentInputType === "文本" ? "selected" : ""}>文本</option>
+                  <option ${currentInputType === "数字" ? "selected" : ""}>数字</option>
+                  <option ${currentInputType === "下拉单选" ? "selected" : ""}>下拉单选</option>
+                  <option ${currentInputType === "下拉多选" ? "selected" : ""}>下拉多选</option>
                 </select>
               </div>
               <div class="field">
                 <label>主数据排序 *</label>
-                <input type="number" placeholder="请输入排序" />
+                <input type="number" placeholder="请输入排序" value="${escapeHtml(payload.order || "")}" />
               </div>
             </div>
           `
@@ -2969,9 +2991,9 @@
       return { title: "提示", subtitle: "", body: "<div class='empty'>暂无内容</div>" };
     }
 
-    function openModal(type) {
-      state.modal = type;
-      const modal = renderModalContent(type);
+    function openModal(type, payload = {}) {
+      state.modal = { type, payload };
+      const modal = renderModalContent(type, payload);
       modalTitle.textContent = modal.title;
       modalSubtitle.textContent = modal.subtitle;
       modalBody.innerHTML = modal.body;
@@ -3054,7 +3076,10 @@
       const { action } = actionButton.dataset;
 
       if (action === "open-modal") {
-        openModal(actionButton.dataset.modal);
+        const payload = { ...actionButton.dataset };
+        delete payload.action;
+        delete payload.modal;
+        openModal(actionButton.dataset.modal, payload);
         return;
       }
 
